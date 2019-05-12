@@ -1,4 +1,4 @@
-﻿
+﻿using Android;
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
@@ -20,7 +20,6 @@ using Mobile.RefApp.DroidLib.Intune;
 using Mobile.RefApp.DroidLib.Network;
 using Mobile.RefApp.DroidLib.Intune.Enrollment;
 using Mobile.RefApp.DroidLib.Intune.Policies;
-using Android;
 
 namespace Mobile.RefApp.CoreUI.Droid
 {
