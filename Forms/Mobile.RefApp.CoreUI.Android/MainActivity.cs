@@ -20,6 +20,7 @@ using Mobile.RefApp.DroidLib.Intune;
 using Mobile.RefApp.DroidLib.Network;
 using Mobile.RefApp.DroidLib.Intune.Enrollment;
 using Mobile.RefApp.DroidLib.Intune.Policies;
+using Android;
 
 namespace Mobile.RefApp.CoreUI.Droid
 {
@@ -43,16 +44,25 @@ namespace Mobile.RefApp.CoreUI.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             FormsMaterial.Init(this, savedInstanceState);
 
+            LoadAuthenticaton();
             //initialize the app
             var refApp = new App();
             refApp.Init(PlatformInitializeContainer);
             LoadApplication(refApp);
         }
+
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        //required for broker support with API > 22
+        private void LoadAuthenticaton()
+        {
+            this.RequestPermissions(new string[] { Manifest.Permission.GetAccounts }, 0);
+            this.RequestPermissions(new string[] { Manifest.Permission.ManageAccounts }, 1);
+            this.RequestPermissions(new string[] { Manifest.Permission.UseCredentials }, 2);
         }
 
         public void PlatformInitializeContainer(UnityContainer container)
