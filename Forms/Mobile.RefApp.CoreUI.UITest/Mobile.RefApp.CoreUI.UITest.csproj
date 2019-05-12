@@ -26,6 +26,29 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.UITest">
+      <HintPath>..\..\packages\Xamarin.UITest.3.0.0\lib\net45\Xamarin.UITest.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Tests.cs" />
+    <Compile Include="AppInitializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mobile.RefApp.Lib\Mobile.RefApp.Lib.csproj">
+      <Project>{5B5C8BB3-3829-4DC5-94C2-CF311873B10B}</Project>
+      <Name>Mobile.RefApp.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mobile.RefApp.CoreUI\Mobile.RefApp.CoreUI.csproj">
+      <Project>{D8A8FE62-3127-4BA8-843D-AC4D272C9DD7}</Project>
+      <Name>Mobile.RefApp.CoreUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

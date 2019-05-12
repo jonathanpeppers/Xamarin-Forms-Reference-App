@@ -4,4 +4,34 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Class1.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ADAL\" />
+    <Folder Include="AppCenter\" />
+    <Folder Include="Intune\" />
+    <Folder Include="Keychain\" />
+    <Folder Include="Logging\" />
+    <Folder Include="Messenging\" />
+    <Folder Include="Nework\" />
+    <Folder Include="Core\" />
+    <Folder Include="ADAL\Constants\" />
+    <Folder Include="Intune\Constants\" />
+    <Folder Include="Intune\Enrollment\" />
+    <Folder Include="Intune\FileProtection\" />
+    <Folder Include="Intune\Policies\" />
+    <Folder Include="IO\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AppCenter" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AppCenter.Distribute" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AppCenter.Push" Version="2.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+  </ItemGroup>
 </Project>
