@@ -79,7 +79,8 @@
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="Readme.MD" />
+    <None Include="Readme.md" />
+    <Compile Include="Controls\BorderlessEntryRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -189,5 +190,8 @@
       <Project>{ED66656D-FC30-4FA8-B7FE-548DE096D698}</Project>
       <Name>Mobile.RefApp.iOSLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\" />
   </ItemGroup>
 </Project>

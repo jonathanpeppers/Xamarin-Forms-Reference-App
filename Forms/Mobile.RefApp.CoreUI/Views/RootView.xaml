@@ -28,9 +28,10 @@
                     <DataTemplate>
                         <ViewCell>
                             <ViewCell.View>
-                                <Frame Padding="0"
-                                       Margin="16, 20, 16, 20"
-                                       BackgroundColor="{DynamicResource PageBackgroundColor}">
+                                <Frame 
+                                    Padding="0"
+                                    Margin="16, 20, 16, 20"
+                                    BackgroundColor="{DynamicResource PageBackgroundColor}">
                                     <Grid RowSpacing="12" 
                                           ColumnSpacing="0">
                                         <Grid.RowDefinitions>
@@ -49,6 +50,7 @@
                                             Grid.Column="0"
                                             Source="{Binding LogoSource}"></Image>
                                         <Label
+                                            Visual="Material"
                                             Style="{DynamicResource TitleStyle}"
                                             Grid.Column="0"
                                             Grid.Row="1"
@@ -57,6 +59,7 @@
                                             Text="{Binding DisplayName}">
                                         </Label>
                                         <Label 
+                                            Visual="Material"
                                             Style="{DynamicResource ListItemDetailTextStyle}"
                                             Grid.Column="0"
                                             Grid.Row="2"

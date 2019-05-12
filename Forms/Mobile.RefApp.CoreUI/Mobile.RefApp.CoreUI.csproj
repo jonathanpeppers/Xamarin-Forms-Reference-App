@@ -45,6 +45,7 @@
     <Folder Include="ViewModels\InTune\" />
     <Folder Include="Views\InTune\" />
     <Folder Include="Assets\Data\" />
+    <Folder Include="Controls\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets\Images\camera-2000-1200.png" />
