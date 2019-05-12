@@ -4,11 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Mobile.RefApp.CoreUI.Base;
 using Mobile.RefApp.CoreUI.Interfaces;
 using Mobile.RefApp.CoreUI.Views;
 using Mobile.RefApp.Lib.ADAL;
 using Mobile.RefApp.Lib.Logging;
+
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 

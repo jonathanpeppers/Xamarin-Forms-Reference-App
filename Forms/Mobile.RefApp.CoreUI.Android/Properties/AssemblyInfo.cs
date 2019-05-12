@@ -6,12 +6,12 @@ using Android.App;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Mobile.RefApp.CoreUI.Android")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Xamarin Reference App")]
+[assembly: AssemblyDescription("Reference App for Xamarin for ADAL, InTune, and Broker support")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Mobile.RefApp.CoreUI.Android")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("Costoda's Coding Monkeys")]
+[assembly: AssemblyProduct("Xamarin Reference App")]
+[assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
@@ -30,5 +30,7 @@ using Android.App;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 // Add some common permissions, these can be removed if not needed
+[assembly: UsesPermission(Android.Manifest.Permission.AccessNetworkState)]
 [assembly: UsesPermission(Android.Manifest.Permission.Internet)]
 [assembly: UsesPermission(Android.Manifest.Permission.WriteExternalStorage)]
+[assembly: UsesPermission(Android.Manifest.Permission.GetAccounts)]

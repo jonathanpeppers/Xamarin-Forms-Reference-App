@@ -3,6 +3,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using Android.Content;
 
 using Xamarin.Forms;
 
@@ -21,6 +22,8 @@ using Mobile.RefApp.DroidLib.Network;
 using Mobile.RefApp.DroidLib.Intune.Enrollment;
 using Mobile.RefApp.DroidLib.Intune.Policies;
 
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+
 namespace Mobile.RefApp.CoreUI.Droid
 {
     [Activity(Label = "Xam Ref App", 
@@ -32,12 +35,12 @@ namespace Mobile.RefApp.CoreUI.Droid
     public class MainActivity 
         : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override void OnMAMCreate(Bundle savedInstanceState)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
-            base.OnCreate(savedInstanceState);
+            base.OnMAMCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
@@ -50,7 +53,22 @@ namespace Mobile.RefApp.CoreUI.Droid
             LoadApplication(refApp);
         }
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        /// <summary>
+        /// Required override method for ADAL integration
+        /// </summary>
+        protected override void OnMAMActivityResult(
+            int requestCode, 
+            Result resultCode, 
+            Intent data)
+        {
+            base.OnMAMActivityResult(requestCode, resultCode, data);
+            AuthenticationAgentContinuationHelper.SetAuthenticationAgentContinuationEventArgs(requestCode, resultCode, data);
+        }
+
+        public override void OnRequestPermissionsResult(
+            int requestCode, 
+            string[] permissions, 
+            [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -64,7 +82,8 @@ namespace Mobile.RefApp.CoreUI.Droid
             this.RequestPermissions(new string[] { Manifest.Permission.UseCredentials }, 2);
         }
 
-        public void PlatformInitializeContainer(UnityContainer container)
+        public void PlatformInitializeContainer(
+            UnityContainer container)
         {
             container.RegisterType<ILoggingService, LoggingService>();
             container.RegisterType<IPlatformHttpClientHandler, AndroidHttpClientHandler>();
