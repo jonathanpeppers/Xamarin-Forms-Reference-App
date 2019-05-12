@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Mobile.RefApp.CoreUI.Base;
 using Mobile.RefApp.CoreUI.Interfaces;
+using Mobile.RefApp.CoreUI.Views;
 using Mobile.RefApp.Lib.ADAL;
 using Mobile.RefApp.Lib.Logging;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace Mobile.RefApp.CoreUI.ViewModels
@@ -76,7 +79,18 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             }
         }
 
+        private CacheToken _cacheToken;
+        public CacheToken Token
+        {
+            get => _cacheToken;
+            set => SetProperty(ref _cacheToken, value);
+        }
+
         public ObservableCollection<Endpoint> EndPoints { get; set; }
+
+        public ICommand GetTokenCommand { get; private set; }
+        public ICommand ViewTokenDetailsCommand { get; private set; }
+        public ICommand ViewTokenRawCommand { get; private set; }
 
         public AzureTokenGeneratorViewModel(
             ILoggingService loggingService, 
@@ -89,22 +103,94 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             EndPoints = new ObservableCollection<Endpoint>();
 
             Title = "Token Generator";
-            Status = "No Token";
+            Status = "No Token Fetched";
+
+            GetTokenCommand = new Command(DoGetToken);
+            ViewTokenDetailsCommand = new Command(async () => await DoViewTokenDetailsCommand());
+            ViewTokenRawCommand = new Command(async () => await DoViewTokenRawCommand());
         }
 
-        public async override Task Initialize(Dictionary<string, object> navigationsParams = null)
+        public async override Task Initialize(
+            Dictionary<string, object> navigationsParams = null)
         {
             var endpoints = await _endpointService.GetEndpointsByPlatorm(App.CurrentPlatform);
+
             if(endpoints.Any())
-            {
                 endpoints.ForEach(x => EndPoints.Add(x));
-            }
+
             await base.Initialize(navigationsParams);
         }
 
-        private void SetTokenStatusMessage(string firstName,
-                                 string lastName,
-                                 DateTimeOffset expires)
+        private void DoGetToken()
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    IsBusy = true;
+                    Token = null;
+                    if (SelectedEndpoint == null)
+                    {
+                        var endpoint = new Lib.ADAL.Endpoint
+                        {
+                            ApplicationId = this.AppId,
+                            Authority = this.TentantUri,
+                            Environment = Lib.Network.Environment.Production,
+                            IsActive = true,
+                            Name = "Ad-hoc",
+                            RedirectUri = this.RedirectUri,
+                            ResourceId = this.Audience,
+                            UseBroker = this.UseBroker,
+                            Platform = App.CurrentPlatform
+                        };
+
+                        Token = await _authenticationService.AuthenticateEndpoint(endpoint);
+                    }
+                    else
+                    {
+                        Token = await _authenticationService.AuthenticateEndpoint(SelectedEndpoint);
+                    }
+                    if (Token != null)
+                        SetTokenStatusMessage(Token.UserInfo.GivenName, Token.UserInfo.FamilyName, Token.ExpiresOn);
+                    else
+                        this.Status = "Failed to get token";
+                }
+                catch (Exception ex)
+                {
+                    _loggingService.LogError(typeof(AzureTokenGeneratorViewModel), ex, ex.Message);
+                }
+                IsBusy = false;
+            });
+        }
+
+        private async Task DoViewTokenDetailsCommand()
+        {
+            if (Token != null)
+            {
+                var parameters = new Dictionary<string, object>
+            {
+                { "token", Token }
+            };
+                await PushAsync<AzureTokenDetailViewerView, AzureTokenDetailViewerViewModel>(parameters, true);
+            }
+        }
+
+        private async Task DoViewTokenRawCommand()
+        {
+            if (Token != null)
+            {
+                var parameters = new Dictionary<string, object>
+            {
+                { "token", Token }
+            };
+                await PushAsync<AzureTokenRawViewerView, AzureTokenRawViewerViewModel>(parameters, true);
+            }
+        }
+
+        private void SetTokenStatusMessage(
+            string firstName,
+            string lastName,
+            DateTimeOffset expires)
         {
             Status = $"Token Received for {firstName} {lastName} that expires on {expires}";
         }

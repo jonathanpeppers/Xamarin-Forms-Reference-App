@@ -5,13 +5,15 @@
 	<key>CFBundleDisplayName</key>
 		<string>Xam Ref App</string>
 	<key>CFBundleIdentifier</key>
-		<string>com.costoda.repapp</string>
+		<string>com.eygsl.ctmob.speedup</string>
+		<!-- <string>com.costoda.repapp</string> -->
 	<key>CFBundleName</key>
 		<string>Xam Ref App</string>
 	<key>CFBundleShortVersionString</key>
 		<string>1.00.00</string>
 	<key>CFBundleVersion</key>
 		<string>2019051101</string>
+
 	<key>LSApplicationQueriesSchemes</key>
 		<array>
 			<string>msauth</string>
@@ -23,25 +25,41 @@
 			<string>ms-outlook-intunemam</string>
 		</array>
 
+	<!-- ADAL settings for InTune, used for looking up token from keychain and for authentication -->
+	<!-- please change these settings to meet your requirements, required for InTune -->
+	<key>IntuneMAMSettings</key>
+		<dict>
+			<key>ADALAuthority</key>
+				<string>https://login.microsoftonline.com/eygs.onmicrosoft.com/</string>
+			<key>ADALCacheKeychainGroupOverride</key>
+				<string>com.microsoft.adalcache</string>
+			<key>ADALClientId</key>
+				<string>503e4e36-72fb-4131-bf5d-68a800eb16e0</string>
+			<key>ADALRedirectUri</key>
+				<string>ctmobspeedup://com.eygsl.ctmob.speedup</string>
+		</dict>
+
+	<!-- used for ADAL broker for deep linking back to the application, and note that Azure Active Directory settings for your app redirect --> 
+	<!-- must match settings below. please change these settings to meet your requirements, required for broker -->
 	<key>CFBundleURLTypes</key>
 		<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>None</string>
-			<key>CFBundleURLName</key>
-			<string>com.costoda.repapp</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>refapp</string>
-				<string>refapp-intunemam</string>
-			</array>
-			<key>NSAppTransportSecurity</key>
 			<dict>
-				<key>NSAllowsArbitraryLoads</key>
-				<true/>
+				<key>CFBundleTypeRole</key>
+					<string>None</string>
+				<key>CFBundleURLName</key>
+					<string>com.eygsl.ctmob.speedup</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>ctmobspeedup</string>
+					<string>ctmobspeedup-intunemam</string>
+				</array>
+				<key>NSAppTransportSecurity</key>
+				<dict>
+					<key>NSAllowsArbitraryLoads</key>
+						<true/>
+				</dict>
 			</dict>
-		</dict>
-	</array>
+		</array>
 
 	<key>MinimumOSVersion</key>
 	<string>11.0</string>

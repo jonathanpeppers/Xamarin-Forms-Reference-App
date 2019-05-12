@@ -37,11 +37,17 @@
                  <Button
                     Margin="0, 8, 0, 0"
                     IsEnabled="true"
+                    Command="{Binding GetTokenCommand}"
                     Text="Get Token">
                 </Button>
                 <Button
                     Margin="0, 15, 0, 0"
-                    Text="View Token" />
+                    Command="{Binding ViewTokenDetailsCommand}"
+                    Text="View Token Details" />
+                <Button
+                    Margin="0, 15, 0, 0"
+                    Command="{Binding ViewTokenRawCommand}"
+                    Text="View Token Raw" />
                 <Label 
                     Margin="0, 10, 0, 0" 
                     TextColor="{DynamicResource TextColor}" 
