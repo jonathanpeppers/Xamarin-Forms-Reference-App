@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<base:ContentPageBase 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    x:Class="Mobile.RefApp.CoreUI.Views.AzureTokenCacheListView"
+    xmlns:local="clr-namespace:Mobile.RefApp.CoreUI;assembly=Mobile.RefApp.CoreUI" 
+    xmlns:base="clr-namespace:Mobile.RefApp.CoreUI.Base;assembly=Mobile.RefApp.CoreUI" 
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+     xmlns:converters="clr-namespace:Mobile.RefApp.CoreUI.Converters;assembly=Mobile.RefApp.CoreUI"
+
+    Style="{StaticResource ContentPageStyle}"
+    ios:Page.UseSafeArea="true"
+    Title="{Binding Title}"
+    Visual="Material"> 
+
+    <ContentPage.Resources>
+         <ResourceDictionary>
+            <!-- convert datetimeoffset to string for labels--> 
+            <converters:DateTimeOffsetStringConverter x:Key="dateTimeOffsetStringConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView
+                Margin="0, 0, 0, 0" 
+                HasUnevenRows="true"
+                BackgroundColor="Black"
+                SeparatorColor="Transparent"
+                SelectionMode="None"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand" 
+                ItemsSource="{Binding CachedTokens}"
+                x:Name="lvToken">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                       <ViewCell>
+                            <ViewCell.View>
+                                <Frame
+                                    Margin="4, 4, 4, 4"
+                                    Padding="12, 20, 12, 20"
+                                    BackgroundColor="{DynamicResource PageBackgroundColor}">    
+                                    <Grid RowSpacing="12" 
+                                          ColumnSpacing="0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label
+                                            Grid.Column="0"
+                                            Grid.Row="0"
+                                            TextColor="White" 
+                                            Text="Resource: "
+                                            FontAttributes="Bold"
+                                            Style="{DynamicResource TitleStyle}"
+                                            Visual="Material">
+                                        </Label>
+                                         <Label
+                                            Visual="Material"
+                                            Style="{DynamicResource TitleStyle}"
+                                            Grid.Column="1"
+                                            Grid.Row="0"
+                                            TextColor="White" 
+                                            Text="{Binding Resource}">
+                                        </Label>
+                                        
+                                        <Label
+                                            Grid.Column="0"
+                                            Grid.Row="1"
+                                            TextColor="White" 
+                                            Text="Authority: "
+                                            FontAttributes="Bold"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Visual="Material">
+                                        </Label>
+                                        <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="1"
+                                            Grid.Row="1"
+                                            TextColor="White" 
+                                            Text="{Binding Authority}">
+                                        </Label>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            Grid.Row="2"
+                                            TextColor="White" 
+                                            Text="ClientId: "
+                                            FontAttributes="Bold"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Visual="Material">
+                                        </Label>
+                                        <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="1"
+                                            Grid.Row="2"
+                                            TextColor="White" 
+                                            Text="{Binding ClientId}">
+                                        </Label>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            Grid.Row="3"
+                                            TextColor="White" 
+                                            Text="Expires On: "
+                                            FontAttributes="Bold"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Visual="Material">
+                                        </Label>
+                                        <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="1"
+                                            Grid.Row="3"
+                                            TextColor="White" 
+                                            Text="{Binding ExpiresOn, Converter={StaticResource dateTimeOffsetStringConverter}} ">
+                                        </Label>
+                                    </Grid>
+                                </Frame> 
+                            </ViewCell.View>
+                       </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button 
+                Margin="4, 0, 4, 20"
+                BackgroundColor="Red"
+                TextColor="White"
+                Command="{Binding ClearCachedTokensCommand}"
+                Text="Clear Cached Tokens">
+            </Button>
+        </StackLayout>
+    </ContentPage.Content>
+
+</base:ContentPageBase>

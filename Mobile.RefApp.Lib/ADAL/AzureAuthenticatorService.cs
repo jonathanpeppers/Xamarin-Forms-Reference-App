@@ -268,6 +268,44 @@ namespace Mobile.RefApp.Lib.ADAL
             return cacheToken;
         }
 
+        public IEnumerable<TokenCacheItem> GetCachedTokens(
+            Endpoint endpoint,
+            [CallerMemberName] string memberName = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            IEnumerable<TokenCacheItem> tokenCache = null;
+            try
+            {
+                var authContext = new AuthenticationContext(endpoint.Authority);
+                tokenCache = authContext.TokenCache.ReadItems();
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+            }
+
+            return tokenCache;
+        }
+
+        public bool ClearCachedTokens(           
+            Endpoint endpoint,
+            [CallerMemberName] string memberName = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            bool results = false;
+            try
+            {
+                var authContext = new AuthenticationContext(endpoint.Authority);
+                authContext.TokenCache.Clear();
+                results |= authContext.TokenCache.Count == 0;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+            }
+            return results;
+        }
+
         private void AdalLog(LogLevel level,
                              string message,
                              bool containsPii)

@@ -18,7 +18,7 @@
     <StackLayout>
        <ActivityIndicator 
             Color="Yellow" 
-            IsRunning="{Binding IsBusy}}" /> 
+            IsRunning="{Binding IsBusy}" /> 
         <ScrollView>
             <StackLayout 
                 Margin="16, 0, 16, 0">

@@ -45,7 +45,7 @@ namespace Mobile.RefApp.CoreUI.Services
             return endpoints;
         }
 
-        public async Task<IList<Endpoint>> GetEndpointsByPlatorm(Platform platform)
+        public async Task<IList<Endpoint>> GetEndpointsByPlatform(Platform platform)
         {
             List<Endpoint> endpoints = null;
             try 

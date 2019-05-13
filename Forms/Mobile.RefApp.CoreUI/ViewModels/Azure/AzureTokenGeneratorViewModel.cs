@@ -115,7 +115,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
         public async override Task Initialize(
             Dictionary<string, object> navigationsParams = null)
         {
-            var endpoints = await _endpointService.GetEndpointsByPlatorm(App.CurrentPlatform);
+            var endpoints = await _endpointService.GetEndpointsByPlatform(App.CurrentPlatform);
 
             if(endpoints.Any())
                 endpoints.ForEach(x => EndPoints.Add(x));

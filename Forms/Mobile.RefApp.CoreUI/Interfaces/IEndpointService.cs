@@ -9,6 +9,6 @@ namespace Mobile.RefApp.CoreUI.Interfaces
     public interface IEndpointService
     {
         Task<IList<Endpoint>> GetEndpoints();
-        Task<IList<Endpoint>> GetEndpointsByPlatorm(Platform platform);
+        Task<IList<Endpoint>> GetEndpointsByPlatform(Platform platform);
     }
 }

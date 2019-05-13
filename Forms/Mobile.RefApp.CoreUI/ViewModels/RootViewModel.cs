@@ -53,8 +53,10 @@ namespace Mobile.RefApp.CoreUI.ViewModels
                         await PushAsync<AzureTokenGeneratorView, AzureTokenGeneratorViewModel>();
                         break;
                     case MenuPageType.AzureTokenCache:
+                        await PushAsync<AzureTokenCacheListView, AzureTokenCacheListViewModel>();
                         break;
                     case MenuPageType.iOSKeychainGroup:
+                        await PushAsync<KeychainGroupListView, KeychainGroupListViewModel>();
                         break;
                     case MenuPageType.InTuneDiagnostics:
                         break;

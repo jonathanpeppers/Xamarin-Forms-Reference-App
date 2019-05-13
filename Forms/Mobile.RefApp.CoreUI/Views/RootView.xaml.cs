@@ -15,10 +15,7 @@ namespace Mobile.RefApp.CoreUI.Views
         private void OnItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (e.Item is NavigationMenuItem item)
-            {
                 ((RootViewModel)ViewModel).NavigateItemSelectedCommand.Execute(item);
-            }
-
         }
     }
 }

@@ -20,6 +20,8 @@ using Mobile.RefApp.Lib.Intune.Enrollment;
 using Mobile.RefApp.iOSLib.Intune.Enrollment;
 using Mobile.RefApp.Lib.Intune.Policies;
 using Mobile.RefApp.iOSLib.Intune.Policies;
+using Mobile.RefApp.Lib.Keychain;
+using Mobile.RefApp.iOSLib.Keychain;
 
 namespace Mobile.RefApp.CoreUI.iOS
 {
@@ -80,6 +82,7 @@ namespace Mobile.RefApp.CoreUI.iOS
             container.RegisterType<INetworkInterfaceInfo, NetworkInterfaceInfo>();
             container.RegisterType<IAzureAuthenticatorEndpointService, AzureAuthenticatorService>();
 
+            container.RegisterType<IKeychainService, KeychainService>();
             container.RegisterType<IEnrollmentService, EnrollmentService>();
             container.RegisterType<IPolicyService, PolicyService>();
 

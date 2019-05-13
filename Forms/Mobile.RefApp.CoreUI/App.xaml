@@ -21,6 +21,12 @@
                 <Setter Property="BackgroundColor" Value="#4B4C4E" />  
                 <Setter Property="NavigationPage.BackButtonTitle" Value="" />
             </Style>
+            <Style x:Key="ContentPageBlackStyle" 
+                   TargetType="ContentPage" 
+                   ApplyToDerivedTypes="true">
+                <Setter Property="BackgroundColor" Value="Black" />  
+                <Setter Property="NavigationPage.BackButtonTitle" Value="" />
+            </Style>
             
             <Style x:Key="ContentPageMenu" 
                    TargetType="ContentPage" 
