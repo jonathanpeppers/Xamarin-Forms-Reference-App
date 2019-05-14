@@ -91,9 +91,19 @@ namespace Mobile.RefApp.CoreUI.Factories
                 },
                 new NavigationMenuItem
                 {
+                    PageType = MenuPageType.InTuneEnrollment,
+                    DisplayName = "InTune Enrollment",
+                    MenuOrder = 2,
+                    IsVisible = true,
+                    AutomationId = AutomationConstants.InTuneEnrollment,
+                    ImageName = "Mobile.RefApp.CoreUI.Assets.Images.intune-enrollment-2000-1200.png",
+                    Description = "This feature allows manual enrollment into InTune using the SDK various methods"
+                },
+                new NavigationMenuItem
+                {
                     PageType = MenuPageType.InTuneDiagnostics,
                     DisplayName = "InTune Diagnostics",
-                    MenuOrder = 2,
+                    MenuOrder = 3,
                     IsVisible = true,
                     AutomationId = AutomationConstants.InTuneDiagnostics,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.diagnostics-2000-1200.png",
@@ -103,17 +113,18 @@ namespace Mobile.RefApp.CoreUI.Factories
                 {
                     PageType = MenuPageType.InTuneLogs,
                     DisplayName = "InTune Logs",
-                    MenuOrder = 3,
+                    MenuOrder = 4,
                     IsVisible = true,
                     AutomationId = AutomationConstants.InTuneLogs,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.logs-2000-1200.png",
                     Description = "This feature is iOS Specific and allows you to gather logging information about InTune",
                 },
+
                 new NavigationMenuItem
                 {
                     PageType = MenuPageType.NetworkConnectivity,
                     DisplayName = "Network Connectivity",
-                    MenuOrder = 4,
+                    MenuOrder = 5,
                     IsVisible = true,
                     AutomationId = AutomationConstants.NetworkMenuItem,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.networkconnection-2000-1200.png",
@@ -123,7 +134,7 @@ namespace Mobile.RefApp.CoreUI.Factories
                 {
                     PageType = MenuPageType.Ping,
                     DisplayName = "Network Tools",
-                    MenuOrder = 5,
+                    MenuOrder = 6,
                     IsVisible = true,
                     AutomationId = AutomationConstants.PingMenuItem,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.networktools-2000-1200.png",
@@ -133,7 +144,7 @@ namespace Mobile.RefApp.CoreUI.Factories
                 {
                     PageType = MenuPageType.SharePointExplorer,
                     DisplayName = "SharePoint Explorer",
-                    MenuOrder = 6,
+                    MenuOrder = 7,
                     IsVisible = true,
                     AutomationId = AutomationConstants.SharePointMenuItem,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.sharepointexplorer-2000-1200.png",
@@ -143,7 +154,7 @@ namespace Mobile.RefApp.CoreUI.Factories
                 {
                     PageType = MenuPageType.SharePointProject,
                     DisplayName = "SharePoint Demo",
-                    MenuOrder = 7,
+                    MenuOrder = 8,
                     IsVisible = true,
                     AutomationId = AutomationConstants.SharePointMenuItem,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.sharepoint-2000-1000.png",
@@ -153,7 +164,7 @@ namespace Mobile.RefApp.CoreUI.Factories
                 {
                     PageType = MenuPageType.Camera,
                     DisplayName = "Camera - CrossMedia",
-                    MenuOrder = 8,
+                    MenuOrder = 9,
                     IsVisible = true,
                     AutomationId = AutomationConstants.CameraMenuItem,
                     ImageName = "Mobile.RefApp.CoreUI.Assets.Images.camera-2000-1200.png",

@@ -12,6 +12,8 @@ using Mobile.RefApp.Lib.Intune.Enrollment;
 using Mobile.RefApp.Lib.Logging;
 
 using Android.Runtime;
+using Mobile.RefApp.Lib.Intune.Logging;
+using System.Linq;
 
 namespace Mobile.RefApp.DroidLib.Intune.Enrollment
 {
@@ -19,66 +21,67 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
         IEnrollmentService,
         IMAMNotificationReceiver 
     {
+        private readonly IAzureAuthenticatorEndpointService _authenticatorEndpointService;
         private readonly ILoggingService _loggingService;
         private readonly IMAMEnrollmentManager _enrollmentManager;
         private readonly IMAMNotificationReceiverRegistry _notificationRegistery;
+        private readonly MAMWEAuthCallback mAMWEAuthCallback;
+
         private IMAMUserInfo _userInfo => MAMComponents.Get<IMAMUserInfo>();
-
         private Exception _registerError;
-        private string _requestedIdentity;
-
-        private readonly AuthenticationResult _authenticationResult;
 
         public Endpoint Endpoint { get; set; }
 
         public List<string> RegisteredAccounts { get; private set; }
 
-        public Action<Status, AuthenticationResult> EnrollmentRequestStatus { get; set; }
+        public string EnrolledAccount => _userInfo?.PrimaryUser;
+        public bool IsIdentityManaged => (_userInfo == null);
 
+        public Action<Status> EnrollmentRequestStatus { get; set; }
         public Action<Status> UnenrollmentRequestStatus { get; set; }
-
         public Action<Status> PolicyRequestStatus { get; set; }
 
-        public string EnrolledAccount => _userInfo?.PrimaryUser;
-
-        public bool IsIdentityManaged => (_userInfo == null); 
-
-        public EnrollmentService(ILoggingService loggingService)
+        public EnrollmentService(
+            ILoggingService loggingService,
+            IAzureAuthenticatorEndpointService authenticatorEndpointService)
 		{
 		    _loggingService = loggingService;
 		    _enrollmentManager = MAMComponents.Get<IMAMEnrollmentManager>();
 		    _notificationRegistery = MAMComponents.Get<IMAMNotificationReceiverRegistry>();
 
-            _authenticationResult = null;
-		    _registerError = null;
+            _registerError = null;
             Endpoint = null;
             RegisteredAccounts = new List<string>();
 
 		    _notificationRegistery.RegisterReceiver(this, MAMNotificationType.MamEnrollmentResult);
 		    _notificationRegistery.RegisterReceiver(this, MAMNotificationType.RefreshPolicy);
-            _enrollmentManager.RegisterAuthenticationCallback(new MAMWEAuthCallback());
+            mAMWEAuthCallback = new MAMWEAuthCallback(_authenticatorEndpointService);
+            _enrollmentManager.RegisterAuthenticationCallback(mAMWEAuthCallback);
         }
 
-        public void RegisterAndEnrollAccount(AuthenticationResult authenticationResult, Endpoint endPoint = null)
+        public void RegisterAndEnrollAccount(Endpoint endPoint)
         {
             try
             {
                 if (endPoint != null)
-                    Endpoint = endPoint;
-                else
-                    throw new Exception(Lib.Intune.Constants.Enrollment.ERRORENDPOINTNULL);
-
-                if (authenticationResult != null && Endpoint != null)
                 {
-                    var upn = authenticationResult?.UserInfo.DisplayableId;
-                    var aadId = authenticationResult?.UserInfo?.UniqueId;
-                    var tenantId = authenticationResult?.TenantId;
+                    Endpoint = endPoint;
+                    mAMWEAuthCallback.CurrentEndpoint = endPoint;
 
-                    _loggingService.LogInformation(typeof(EnrollmentService), $"{Lib.Intune.Constants.Enrollment.ENROLLMENTLOGTAG} UPN {upn}\n TenantId: {tenantId}\n AadId: {aadId} \n");
-                    _enrollmentManager.RegisterAccountForMAM(upn, aadId, tenantId);
+                    var tokens = _authenticatorEndpointService.GetCachedTokens(Endpoint).Where(x => x.Resource == Endpoint.ResourceId).ToList();
+                    if (tokens.Any())
+                    {
+                        var token = tokens[0];
+
+                        _loggingService.LogInformation(typeof(EnrollmentService), $"{Lib.Intune.Constants.Enrollment.ENROLLMENTLOGTAG} UPN {token.DisplayableId}\n TenantId: {token.UniqueId}\n AadId: {token.TenantId} \n");
+                        InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Register and Enrollment", Module = SDKModule.Enrollment });
+                        _enrollmentManager.RegisterAccountForMAM(token.DisplayableId, token.UniqueId, token.TenantId);
+                    }
+                    else
+                        throw new Exception(Lib.Intune.Constants.Enrollment.ERRORNULL);
                 }
                 else
-                    throw new Exception(Lib.Intune.Constants.Enrollment.ERRORNULL);
+                    throw new Exception(Lib.Intune.Constants.Enrollment.ERRORENDPOINTNULL);
             }
             catch (Exception ex)
             {
@@ -90,29 +93,17 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
                 };
 
                 _loggingService.LogError(typeof(EnrollmentService), ex, ex.Message);
-                EnrollmentRequestStatus(status, _authenticationResult);
+                EnrollmentRequestStatus(status);
             }
         }
 
-        public void LoginAndEnrollAccount(string identity = null, 
-            Endpoint endPoint = null, 
-            IAzureAuthenticatorService authenticator = null)
+        public void LoginAndEnrollAccount(Endpoint endPoint, string identity = null)
         {
             try
             {
-                _requestedIdentity = identity;
-                //set the endpoint
-                if (endPoint != null)
-                    Endpoint = endPoint;
+                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Login and Enrollment", Module = SDKModule.Enrollment });
 
-                CacheToken token = AzureTokenCacheService.GetTokenByUpn(identity)[0];
-                if (token != null)
-                {
-                    var tenantId = token.TenantId;
-                    var aadId = token.UserInfo?.UniqueId;
-                    _enrollmentManager.RegisterAccountForMAM(identity, aadId, tenantId);
-                    return;
-                }
+                RegisterAndEnrollAccount(endPoint);
             }
             catch (Exception ex)
             {
@@ -124,16 +115,25 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
                 };
 
                 _loggingService.LogError(typeof(EnrollmentService), ex, ex.Message);
-                EnrollmentRequestStatus(status, _authenticationResult);
+                EnrollmentRequestStatus(status);
             }
 		}
 
-		public void DeRegisterAndUnenrollAccount(AuthenticationResult authenticationResult, bool withWipe = false)
+		public void DeRegisterAndUnenrollAccount(bool withWipe = false)
 		{
 			try
 			{
-            _enrollmentManager.UnregisterAccountForMAM(_authenticationResult.UserInfo.UniqueId);
-			}
+                var tokens = _authenticatorEndpointService.GetCachedTokens(Endpoint).Where(x => x.Resource == Endpoint.ResourceId).ToList();
+                if (tokens.Any())
+                {
+                    var token = tokens[0];
+
+                    InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Deregister and Unenrollment", Module = SDKModule.Unenrollment });
+                    _enrollmentManager.UnregisterAccountForMAM(token.UniqueId);
+                }
+                else
+                    throw new Exception(Lib.Intune.Constants.Enrollment.ERRORNULL);
+            }
 			catch (Exception ex)
 			{
 				_loggingService.LogError(typeof(EnrollmentService), ex, ex.Message);
@@ -207,7 +207,9 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
 						_registerError = null;
 					}
 
-					EnrollmentRequestStatus(status, _authenticationResult);
+                    InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Did Succeed: {status.DidSucceed} Status Code: { status.StatusCode}, Error: {status.Error}", Module = SDKModule.Enrollment});
+
+					EnrollmentRequestStatus(status);
 				}
 				else if (UnenrollmentRequestStatus != null)
 				{
@@ -227,7 +229,8 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
 						_registerError = null;
 					}
 
-					UnenrollmentRequestStatus(status);
+                    InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Did Succeed: {status.DidSucceed} Status Code: { status.StatusCode}, Error: {status.Error}", Module = SDKModule.Unenrollment });
+                    UnenrollmentRequestStatus(status);
 				}
 			}
 			else if (notification.Type == MAMNotificationType.RefreshPolicy)
@@ -235,7 +238,10 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
 				status.StatusCode = StatusCode.RefreshPolicy;
 				status.DidSucceed = true;
 				status.Error = null;
-				PolicyRequestStatus(status);
+
+                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Refresh Policy", Module = SDKModule.Policies });
+
+                PolicyRequestStatus(status);
 			}
 			return true;
 		}
@@ -246,10 +252,24 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
         : Java.Lang.Object, 
           IMAMServiceAuthenticationCallback
     {
+        private readonly IAzureAuthenticatorEndpointService _authenticatorEndpointService;
+        public Endpoint CurrentEndpoint { get; set; }
+       
+
+        public MAMWEAuthCallback(IAzureAuthenticatorEndpointService authenticatorEndpointService)
+        {
+            _authenticatorEndpointService = authenticatorEndpointService;
+        }
+
         public string AcquireToken(string upn, string aadId, string resourceId)
         {
             var result = string.Empty;
-            var cacheTokens = AzureTokenCacheService.GetTokenByUpn(upn);
+            var tokens = _authenticatorEndpointService.GetCachedTokens(CurrentEndpoint).Where(x => x.Resource == CurrentEndpoint.ResourceId).ToList();
+            if (tokens.Any())
+            {
+                var token = tokens[0];
+            }
+                var cacheTokens = AzureTokenCacheService.GetTokenByUpn(upn);
             foreach (var token in cacheTokens)
             {
                 if (token.UserInfo?.UniqueId == aadId)

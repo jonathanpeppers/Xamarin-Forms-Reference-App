@@ -36,9 +36,6 @@
 <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 <AndroidKeyStore>True</AndroidKeyStore>
 <AndroidSigningKeyStore>/Users/lebeaaa/Code/EY.Mobile.Speed/scripts/eyspeedup.keystore</AndroidSigningKeyStore>
-<AndroidSigningStorePass>speedUp@l1@$pas$</AndroidSigningStorePass>
-<AndroidSigningKeyAlias>eyspeedup</AndroidSigningKeyAlias>
-<AndroidSigningKeyPass>speedUp@l1@$pas$</AndroidSigningKeyPass>
 <AndroidEnableSGenConcurrent>false</AndroidEnableSGenConcurrent>
 <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
   </PropertyGroup>

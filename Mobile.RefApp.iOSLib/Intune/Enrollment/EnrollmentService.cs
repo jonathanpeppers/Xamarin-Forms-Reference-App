@@ -6,8 +6,8 @@ using Mobile.RefApp.Lib.ADAL;
 using Mobile.RefApp.Lib.Intune.Enrollment;
 using Mobile.RefApp.Lib.Logging;
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Intune.MAM;
+using Mobile.RefApp.Lib.Intune.Logging;
 
 namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 {
@@ -15,9 +15,10 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 	  : IntuneMAMEnrollmentDelegate,
 		IEnrollmentService
 	{
-		private readonly ILoggingService _loggingService;
+        private readonly ILoggingService _loggingService;
+        private readonly IAzureAuthenticatorEndpointService _authenticatorEndpointService;
 
-		public Action<Status, AuthenticationResult> EnrollmentRequestStatus { get; set; }
+		public Action<Status> EnrollmentRequestStatus { get; set; }
 
 		public Action<Status> UnenrollmentRequestStatus { get; set; }
 
@@ -34,18 +35,19 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 
 		public Endpoint Endpoint { get; set; }
 
-		public AuthenticationResult AuthenticationResults { get; set; }
-
-		public EnrollmentService(ILoggingService loggingService)
+		public EnrollmentService(
+            ILoggingService loggingService,
+            IAzureAuthenticatorEndpointService authenticatorEndpointService)
 		{
-			_loggingService = loggingService;
+            _loggingService = loggingService;
+            _authenticatorEndpointService = authenticatorEndpointService;
+
 			IntuneMAMEnrollmentManager.Instance.Delegate = this;
 		}
 
 		public void LoginAndEnrollAccount(
-            string identity = null, 
-            Endpoint endPoint = null, 
-            IAzureAuthenticatorService authenticator = null)
+            Endpoint endPoint,
+            string identity = null)
 		{
 			try
 			{
@@ -55,25 +57,11 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
                 if (Endpoint != null)
                     SetAdalInformation(endPoint);
                                         
-                CacheToken token = AzureTokenCacheService.GetTokenByUpn(identity).FirstOrDefault();
-                if (token != null)
+                InvokeOnMainThread(() =>
                 {
-                    InvokeOnMainThread(() =>
-                    {
-                        //TODO 
-                        //debugging - bug with getting tokens via register method
-                        //working with @Kyle at Microsoft on issue.  Only work around
-                        //is to run LoginAndEnroll instead
-
-                        //IntuneMAMEnrollmentManager.Instance.LoginAndEnrollAccount(identity);
-
-                        IntuneMAMEnrollmentManager.Instance.RegisterAndEnrollAccount(identity);
-                    });
-                }
-                else
-                {
+                    InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Login and Enrollment", Module = SDKModule.Enrollment });
                     IntuneMAMEnrollmentManager.Instance.LoginAndEnrollAccount(identity);
-                }
+                });
 			}
 			catch (Exception ex)
 			{
@@ -81,21 +69,28 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 			}
 		}
 
-		public void RegisterAndEnrollAccount(
-            AuthenticationResult authenticationResult, 
-            Endpoint endPoint = null)
+		public void RegisterAndEnrollAccount(Endpoint endPoint)
 		{
 			try
 			{
-				if (endPoint != null)
-					Endpoint = endPoint;
-
-				if (Endpoint != null)
-				{
+                if (endPoint != null)
+                {
+                    Endpoint = endPoint;
                     SetAdalInformation(endPoint);
-				}
-                if (authenticationResult != null)
-                    IntuneMAMEnrollmentManager.Instance.RegisterAndEnrollAccount(authenticationResult.UserInfo.DisplayableId);
+
+                    //get cache token from ADAL
+                    var tokens = _authenticatorEndpointService.GetCachedTokens(Endpoint).Where(x => x.Resource == Endpoint.ResourceId).ToList();
+                    if (tokens.Any())
+                    {
+                        //TODO 
+                        //debugging - bug with getting tokens via register method
+                        //working with @Kyle at Microsoft on issue.  Only work around
+                        //is to run LoginAndEnroll instead
+                        InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Register and Enrollment", Module = SDKModule.Enrollment });
+                        IntuneMAMEnrollmentManager.Instance.RegisterAndEnrollAccount(
+                            tokens[0].DisplayableId);
+                    }
+                }
                 else
                     throw new Exception(Lib.Intune.Constants.Enrollment.ERRORNULL);
 
@@ -112,12 +107,12 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
             }
 		}
 
-		public void DeRegisterAndUnenrollAccount(AuthenticationResult authenticationResult = null, bool withWipe = false)
+		public void DeRegisterAndUnenrollAccount(bool withWipe = false)
 		{
 			try
 			{
-				IntuneMAMEnrollmentManager.Instance.DeRegisterAndUnenrollAccount(IntuneMAMEnrollmentManager.Instance.EnrolledAccount,
-																				 withWipe);
+                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Deregister and Unenrollment", Module = SDKModule.Unenrollment });
+                IntuneMAMEnrollmentManager.Instance.DeRegisterAndUnenrollAccount(IntuneMAMEnrollmentManager.Instance.EnrolledAccount, withWipe);
 			}
 			catch (Exception ex)
 			{
@@ -143,7 +138,8 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 					Error = status.ErrorString,
 					StatusCode = MapStatusCode(status.StatusCode)
 				};
-				EnrollmentRequestStatus(es, AuthenticationResults);
+                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Enrollment Update Status: {es.StatusCode}, Error: {es.Error}", Module = SDKModule.Enrollment });
+                EnrollmentRequestStatus(es);
 			}
 		}
 
@@ -157,7 +153,8 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 					Error = status.ErrorString,
 					StatusCode = MapStatusCode(status.StatusCode)
 				};
-				PolicyRequestStatus(es);
+                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Policy Update Status: {es.StatusCode}, Error: {es.Error}", Module = SDKModule.Policies });
+                PolicyRequestStatus(es);
 			}
 		}
 
@@ -171,7 +168,8 @@ namespace Mobile.RefApp.iOSLib.Intune.Enrollment
 					Error = status.ErrorString,
 					StatusCode = MapStatusCode(status.StatusCode)
 				};
-				UnenrollmentRequestStatus(ues);
+                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Unenrollment Update Status: {ues.StatusCode}, Error: {ues.Error}", Module = SDKModule.Unenrollment });
+                UnenrollmentRequestStatus(ues);
 			}
 		}
 

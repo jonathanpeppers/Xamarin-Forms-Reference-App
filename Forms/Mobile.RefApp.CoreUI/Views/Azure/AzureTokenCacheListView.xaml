@@ -47,6 +47,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -110,7 +111,7 @@
                                             Grid.Column="0"
                                             Grid.Row="3"
                                             TextColor="White" 
-                                            Text="Expires On: "
+                                            Text="User: "
                                             FontAttributes="Bold"
                                             Style="{DynamicResource ListItemDetailTextStyle}"
                                             Visual="Material">
@@ -120,6 +121,24 @@
                                             Style="{DynamicResource ListItemDetailTextStyle}"
                                             Grid.Column="1"
                                             Grid.Row="3"
+                                            TextColor="White" 
+                                            Text="{Binding DisplayableId} ">
+                                        </Label>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            Grid.Row="4"
+                                            TextColor="White" 
+                                            Text="Expires On: "
+                                            FontAttributes="Bold"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Visual="Material">
+                                        </Label>
+                                        <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="1"
+                                            Grid.Row="4"
                                             TextColor="White" 
                                             Text="{Binding ExpiresOn, Converter={StaticResource dateTimeOffsetStringConverter}} ">
                                         </Label>

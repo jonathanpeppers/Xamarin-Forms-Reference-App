@@ -1,13 +1,11 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-
-using Serilog;
-
-using Foundation;
+﻿using Foundation;
 using UIKit;
 
 using Unity;
 
 using Xamarin.Forms;
+
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 using Mobile.RefApp.Lib.Logging;
 using Mobile.RefApp.iOSLib.ADAL;
@@ -22,6 +20,9 @@ using Mobile.RefApp.Lib.Intune.Policies;
 using Mobile.RefApp.iOSLib.Intune.Policies;
 using Mobile.RefApp.Lib.Keychain;
 using Mobile.RefApp.iOSLib.Keychain;
+using Mobile.RefApp.Lib.Intune.Logging;
+
+using Serilog;
 
 namespace Mobile.RefApp.CoreUI.iOS
 {
@@ -85,7 +86,7 @@ namespace Mobile.RefApp.CoreUI.iOS
             container.RegisterType<IKeychainService, KeychainService>();
             container.RegisterType<IEnrollmentService, EnrollmentService>();
             container.RegisterType<IPolicyService, PolicyService>();
-
+            container.RegisterType<Lib.Intune.IDiagnosticService, iOSLib.Intune.DiagnosticsService>();
         }
     }
 }

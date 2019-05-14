@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="Class1.cs" />
+    <Compile Remove="Intune\Logging\IInTuneLoggingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ADAL\" />
@@ -22,6 +23,8 @@
     <Folder Include="Intune\FileProtection\" />
     <Folder Include="Intune\Policies\" />
     <Folder Include="IO\" />
+    <Folder Include="Intune\Logging\" />
+    <Folder Include="Tasks\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.0.5" />

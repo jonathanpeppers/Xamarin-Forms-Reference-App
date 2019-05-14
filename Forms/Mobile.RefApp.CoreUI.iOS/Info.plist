@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Xam Ref App</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.eygsl.ctmob.speedup</string>
+	<string></string>
 	<key>CFBundleName</key>
 	<string>Xam Ref App</string>
 	<key>CFBundleShortVersionString</key>
@@ -16,11 +16,11 @@
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 			<key>CFBundleURLName</key>
-			<string>com.eygsl.ctmob.speedup</string>
+			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>ctmobspeedup</string>
-				<string>ctmobspeedup-intunemam</string>
+				<string></string>
+				<string>-intunemam</string>
 			</array>
 			<key>NSAppTransportSecurity</key>
 			<dict>
@@ -34,13 +34,13 @@
 	<key>IntuneMAMSettings</key>
 	<dict>
 		<key>ADALAuthority</key>
-		<string>https://login.microsoftonline.com/eygs.onmicrosoft.com/</string>
+		<string></string>
 		<key>ADALCacheKeychainGroupOverride</key>
 		<string>com.microsoft.adalcache</string>
 		<key>ADALClientId</key>
-		<string>503e4e36-72fb-4131-bf5d-68a800eb16e0</string>
+		<string></string>
 		<key>ADALRedirectUri</key>
-		<string>ctmobspeedup://com.eygsl.ctmob.speedup</string>
+		<string></string>
 	</dict>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>

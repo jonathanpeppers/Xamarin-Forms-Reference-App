@@ -27,6 +27,7 @@ namespace Mobile.RefApp.CoreUI.Models
         StickyHeader,
         Scanbot,
         InTuneDiagnostics,
+        InTuneEnrollment,
         InTuneLogs,
         AzureTokenGen5000,
         AzureTokenCache,

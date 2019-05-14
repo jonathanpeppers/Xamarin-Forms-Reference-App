@@ -14,15 +14,13 @@ namespace Mobile.RefApp.Lib.Intune.Enrollment
 		List<string> RegisteredAccounts { get; }
         bool IsIdentityManaged { get; }
 
-        Action<Status, AuthenticationResult> EnrollmentRequestStatus { get; set; }
+        Action<Status> EnrollmentRequestStatus { get; set; }
 		Action<Status> UnenrollmentRequestStatus { get; set; }
 		Action<Status> PolicyRequestStatus { get; set; }
 
-		void RegisterAndEnrollAccount(AuthenticationResult authenticationResult, Endpoint endPoint = null);
-
-		void LoginAndEnrollAccount(string identity = null, Endpoint endpoint = null, IAzureAuthenticatorService authenticator = null);
-
-		void DeRegisterAndUnenrollAccount(AuthenticationResult authenticationResult = null, bool withWipe = false);
+		void RegisterAndEnrollAccount(Endpoint endPoint);
+		void LoginAndEnrollAccount(Endpoint endpoint, string identity = null);
+		void DeRegisterAndUnenrollAccount(bool withWipe = false);
 
 
 	}

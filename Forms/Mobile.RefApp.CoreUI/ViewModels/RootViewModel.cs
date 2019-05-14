@@ -1,10 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Mobile.RefApp.CoreUI.Base;
 using Mobile.RefApp.CoreUI.Factories;
 using Mobile.RefApp.CoreUI.Models;
 using Mobile.RefApp.CoreUI.Views;
+using Mobile.RefApp.Lib.Intune;
+
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -13,6 +16,8 @@ namespace Mobile.RefApp.CoreUI.ViewModels
     public class RootViewModel
         : ViewModelBase
     {
+        private readonly IDiagnosticService _diagnosticServices;
+
         public string _version;
         public string Version
         {
@@ -31,15 +36,19 @@ namespace Mobile.RefApp.CoreUI.ViewModels
 
         public ObservableCollection<NavigationMenuItem> MenuItems { get; private set; }
 
-        public RootViewModel()
+        public RootViewModel(IDiagnosticService diagnosticServices)
         {
             Title = "Reference App";
+            _diagnosticServices = diagnosticServices;
+
             MenuItems = new ObservableCollection<NavigationMenuItem>(MenuFactory.GetMenuItems());
         }
         public override void OnAppearing()
         {
             Version = $"Version: {AppInfo.VersionString}, Build: {AppInfo.BuildString}";
+
             DeviceInformation = $"OS Ver: {DeviceInfo.VersionString}, Model: {DeviceInfo.Model}, Manufacturer: {DeviceInfo.Manufacturer}, Name: {DeviceInfo.Name}";
+
             NavigateItemSelectedCommand = new Command(async (obj) => await NavigateItemSelected(obj));
         }
 
@@ -58,9 +67,14 @@ namespace Mobile.RefApp.CoreUI.ViewModels
                     case MenuPageType.iOSKeychainGroup:
                         await PushAsync<KeychainGroupListView, KeychainGroupListViewModel>();
                         break;
+                    case MenuPageType.InTuneEnrollment:
+                        await PushAsync<InTuneEnrollmentView, InTuneEnrollmentViewModel>();
+                        break;
                     case MenuPageType.InTuneDiagnostics:
+                        _diagnosticServices.DisplayDiagnostics(true);
                         break;
                     case MenuPageType.InTuneLogs:
+                        await PushAsync<InTuneLogsViewerView, InTuneLogsViewerViewModel>();
                         break;
                     case MenuPageType.NetworkConnectivity:
                         break;

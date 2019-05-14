@@ -30,7 +30,7 @@ namespace Mobile.RefApp.CoreUI.Constants
         public static string iOSKeychainGroup = nameof(iOSKeychainGroup);
         public static string InTuneDiagnostics = nameof(InTuneDiagnostics);
         public static string InTuneLogs = nameof(InTuneLogs);
-
+        public static string InTuneEnrollment = nameof(InTuneEnrollment);
         //Buttons
         public static string CameraButton = nameof(CameraButton);
         public static string PicturesListView = nameof(PicturesListView);

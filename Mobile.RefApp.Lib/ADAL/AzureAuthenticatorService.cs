@@ -86,7 +86,7 @@ namespace Mobile.RefApp.Lib.ADAL
                         results = await authContext.AcquireTokenAsync(endpoint.ResourceId,
                             endpoint.ApplicationId,
                             new Uri(endpoint.RedirectUri),
-                            platformParameters);
+                            platformParameters).WithTimeout(5000);
                     }
                     else
                     {
@@ -95,7 +95,7 @@ namespace Mobile.RefApp.Lib.ADAL
                             new Uri(endpoint.RedirectUri),
                             platformParameters, 
                             UserIdentifier.AnyUser,
-                            endpoint.ExtraParameters);
+                            endpoint.ExtraParameters).WithTimeout(5000);
                     }
 
                     _loggingService.LogInformation(typeof(AzureAuthenticatorService),
@@ -112,7 +112,6 @@ namespace Mobile.RefApp.Lib.ADAL
 											 lineNumber,
 											 $"Returned User: {aume?.ReturnedUser} Requested User: {aume?.RequestedUser}",
 											 $"Error Code:: {aume?.ErrorCode}");
-                    throw;
                 }
                 catch (AdalSilentTokenAcquisitionException astae)
                 {
@@ -122,7 +121,6 @@ namespace Mobile.RefApp.Lib.ADAL
 											 memberName,
 											 lineNumber,
 											 astae.Data);
-                    throw;
                 }
                 catch (AdalClaimChallengeException acce)
                 {
@@ -148,7 +146,6 @@ namespace Mobile.RefApp.Lib.ADAL
 											ase.Headers,
 											ase.ServiceErrorCodes,
 											ase.StatusCode);
-                    throw;
                 }
                 catch (Exception e)
                 { 
@@ -158,7 +155,6 @@ namespace Mobile.RefApp.Lib.ADAL
 											memberName,
 											lineNumber,
 											null);
-                    throw;
                 }
 
                 //
@@ -211,7 +207,6 @@ namespace Mobile.RefApp.Lib.ADAL
                                          lineNumber,
                                          $"Returned User: {aume?.ReturnedUser} Requested User: {aume?.RequestedUser}",
                                          $"Error Code:: {aume?.ErrorCode}");
-                throw;
             }
             catch (AdalSilentTokenAcquisitionException astae)
             {
@@ -221,7 +216,6 @@ namespace Mobile.RefApp.Lib.ADAL
                                          memberName,
                                          lineNumber,
                                          astae.Data);
-                throw;
             }
             catch (AdalClaimChallengeException acce)
             {
@@ -234,7 +228,6 @@ namespace Mobile.RefApp.Lib.ADAL
                                          acce.Headers,
                                          acce.ServiceErrorCodes,
                                          acce.StatusCode);
-                throw;
 
             }
             catch (AdalServiceException ase)
@@ -248,7 +241,6 @@ namespace Mobile.RefApp.Lib.ADAL
                                         ase.Headers,
                                         ase.ServiceErrorCodes,
                                         ase.StatusCode);
-                throw;
 
             }
             catch (Exception e)
@@ -259,7 +251,6 @@ namespace Mobile.RefApp.Lib.ADAL
                                         memberName,
                                         lineNumber,
                                         null);
-                throw;
             }
 
             //add result to cache

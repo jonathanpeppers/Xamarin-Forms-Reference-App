@@ -23,6 +23,7 @@ using Mobile.RefApp.DroidLib.Intune.Enrollment;
 using Mobile.RefApp.DroidLib.Intune.Policies;
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Mobile.RefApp.Lib.Intune.Logging;
 
 namespace Mobile.RefApp.CoreUI.Droid
 {
@@ -94,6 +95,7 @@ namespace Mobile.RefApp.CoreUI.Droid
 
             container.RegisterType<IEnrollmentService, EnrollmentService>();
             container.RegisterType<IPolicyService, PolicyService>();
+            container.RegisterType<Lib.Intune.IDiagnosticService, DroidLib.Intune.DiagnosticsService>();
         }
     }
 }

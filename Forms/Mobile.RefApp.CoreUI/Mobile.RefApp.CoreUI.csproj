@@ -62,6 +62,7 @@
     <EmbeddedResource Include="Assets\Images\sharepoint-2000-1000.png" />
     <EmbeddedResource Include="Assets\Data\Endpoints.json" />
     <EmbeddedResource Include="Assets\Data\Sharepoint.json" />
+    <EmbeddedResource Include="Assets\Images\intune-enrollment-2000-1200.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\AppResources.resx">
@@ -87,6 +88,7 @@
     <None Remove="Assets\Images\sharepoint-2000-1000.png" />
     <None Remove="Assets\Data\Endpoints.json" />
     <None Remove="Assets\Data\Sharepoint.json" />
+    <None Remove="Assets\Images\intune-enrollment-2000-1200.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mobile.RefApp.Lib\Mobile.RefApp.Lib.csproj" />

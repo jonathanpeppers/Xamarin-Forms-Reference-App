@@ -5,7 +5,6 @@
 	<!-- required for broker/Intune.  You MUST change the first entry to your CFBundleIdentifier -->
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.eygsl.ctmob.speedup</string>
 		<string>$(AppIdentifierPrefix)com.microsoft.intune.mam</string>
 		<string>$(AppIdentifierPrefix)com.microsoft.adalcache</string>
 	</array>
