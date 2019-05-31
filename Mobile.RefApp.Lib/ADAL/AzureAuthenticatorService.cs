@@ -72,7 +72,7 @@ namespace Mobile.RefApp.Lib.ADAL
                     authContext.iOSKeychainSecurityGroup = endpoint.iOSKeychainSecurityGroup;
 #endif
 
-                    _logBuilder.Clear();
+                        _logBuilder.Clear();
 					    LoggerCallbackHandler.LogCallback = AdalLog;
 					    LoggerCallbackHandler.PiiLoggingEnabled = true;
 
@@ -159,8 +159,7 @@ namespace Mobile.RefApp.Lib.ADAL
 
                 //
                 //add result to token cache
-                var cacheToken = AzureTokenCacheService.CreateCacheToken(results, endpoint);
-                AzureTokenCacheService.AddToken(cacheToken);
+                var cacheToken = CacheToken.GetCacheToken(endpoint, results);
                 return cacheToken;
             }
             else
@@ -254,8 +253,7 @@ namespace Mobile.RefApp.Lib.ADAL
             }
 
             //add result to cache
-            var cacheToken = AzureTokenCacheService.CreateCacheToken(results, endpoint);
-            AzureTokenCacheService.AddToken(cacheToken);
+            var cacheToken = CacheToken.GetCacheToken(endpoint, results);
             return cacheToken;
         }
 

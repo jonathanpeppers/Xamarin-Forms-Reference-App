@@ -10,13 +10,16 @@ namespace Mobile.RefApp.Lib.Network
     public class CachedTokenHttpClientHandler 
         : HttpClientHandler
     {
+        private readonly IAzureAuthenticatorEndpointService _endpointService;
         private readonly ILoggingService _loggingService;
         private readonly Lib.ADAL.Endpoint _endpoint;
 
         public CachedTokenHttpClientHandler(ILoggingService loggingService,
+                                            IAzureAuthenticatorEndpointService endpointService,
                                                  Lib.ADAL.Endpoint endpoint)
                                                 
         {
+            _endpointService = endpointService;
             _loggingService = loggingService;
             _endpoint = endpoint;
         }
@@ -26,7 +29,7 @@ namespace Mobile.RefApp.Lib.Network
         {
             try
             {
-                var token = AzureTokenCacheService.GetTokenByEndpoint(_endpoint);
+                var token = await _endpointService.AcquireTokenSilentAsync(_endpoint); 
 
                 //if old token exist - get rid of it
                 if (request.Headers.Contains("Authorization"))
