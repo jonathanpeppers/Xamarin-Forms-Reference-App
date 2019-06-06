@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Mobile.RefApp.Lib.Network
+﻿namespace Mobile.RefApp.Lib.Network
 {
     public interface INetworkInterfaceInfo
     {

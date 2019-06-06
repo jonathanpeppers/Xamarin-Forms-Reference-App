@@ -12,6 +12,7 @@ namespace Mobile.RefApp.Lib.Network
         QA = 3,
         Staging = 4,
         Training = 5,
-        UAT = 6
+        UAT = 6,
+        Mock = 7
     }
 }

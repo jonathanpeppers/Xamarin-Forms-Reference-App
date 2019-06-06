@@ -5,7 +5,7 @@ using Mobile.RefApp.Lib.Logging;
 namespace Mobile.RefApp.DroidLib.Intune.Policies
 {
     public class PolicyService
-        : IPolicyService, IAndroidPolicyService
+        : IPolicyService
     {
         private readonly ILoggingService _loggingService;
 

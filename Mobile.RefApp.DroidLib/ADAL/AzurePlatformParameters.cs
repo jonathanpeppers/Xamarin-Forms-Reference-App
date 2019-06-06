@@ -15,13 +15,8 @@ namespace Mobile.RefApp.DroidLib.ADAL
 
 		public AzurePlatformParameters()
 		{
-            CurrentContext = null; 
-		}
-
-		public AzurePlatformParameters(Activity context)
-		{
-			CurrentContext = context;
-		}
+            CurrentContext = Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity;
+        }
 
 		public IPlatformParameters GetPlatformParameters(bool useBroker)
 		{

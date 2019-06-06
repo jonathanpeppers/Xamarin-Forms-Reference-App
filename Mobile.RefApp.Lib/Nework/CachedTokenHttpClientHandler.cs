@@ -1,40 +1,50 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
+
 using Mobile.RefApp.Lib.ADAL;
 using Mobile.RefApp.Lib.Logging;
 
 namespace Mobile.RefApp.Lib.Network
 {
-    public class CachedTokenHttpClientHandler 
+    public class CachedTokenHttpClientHandler
         : HttpClientHandler
     {
+        private readonly IAzureAuthenticatorEndpointService _azureAuthenticatorEndpointService;
         private readonly ILoggingService _loggingService;
         private readonly Lib.ADAL.Endpoint _endpoint;
 
-        public CachedTokenHttpClientHandler(ILoggingService loggingService,
-                                                 Lib.ADAL.Endpoint endpoint)
-                                                
+        public CachedTokenHttpClientHandler(
+            ILoggingService loggingService,
+            IAzureAuthenticatorEndpointService azureAuthenticatorEndpointService,
+            ADAL.Endpoint endpoint)
+
         {
+            _azureAuthenticatorEndpointService = azureAuthenticatorEndpointService;
             _loggingService = loggingService;
             _endpoint = endpoint;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, 
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
                                                                      CancellationToken cancellationToken)
         {
             try
             {
-                var token = AzureTokenCacheService.GetTokenByEndpoint(_endpoint);
+                var tokens = _azureAuthenticatorEndpointService.GetCachedTokens(_endpoint);
+                var token = tokens.FirstOrDefault();
 
-                //if old token exist - get rid of it
-                if (request.Headers.Contains("Authorization"))
-                    request.Headers.Remove("Authorization");
+                if (token != null)
+                {
+                    //if old token exist - get rid of it
+                    if (request.Headers.Contains("Authorization"))
+                        request.Headers.Remove("Authorization");
 
-                request.Headers.Add("Authorization", $"Bearer {token.Token}");
+                    request.Headers.Add("Authorization", $"Bearer {token.AccessToken}");
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _loggingService.LogError(typeof(CachedTokenHttpClientHandler), ex, ex.Message);
             }

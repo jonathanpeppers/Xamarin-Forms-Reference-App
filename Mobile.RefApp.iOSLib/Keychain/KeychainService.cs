@@ -11,10 +11,10 @@ namespace Mobile.RefApp.iOSLib.Keychain
         : IKeychainService
 
     {
-        public ICollection<string> GetRecordsFromKeychain(string key)
+        public ICollection<Lib.Keychain.SecRecord> GetRecordsFromKeychain(string key)
         {
-            List<string> returnResults = new List<string>(); 
-            var queryRecord = new SecRecord(SecKind.GenericPassword)
+            List<Lib.Keychain.SecRecord> returnResults = new List<Lib.Keychain.SecRecord>(); 
+            var queryRecord = new Security.SecRecord(SecKind.GenericPassword)
             {
                 AccessGroup = key
             };
@@ -24,18 +24,34 @@ namespace Mobile.RefApp.iOSLib.Keychain
             {
                 foreach (var r in records)
                 {
-                    var s = r.ValueData.ToString(Foundation.NSStringEncoding.UTF8);
-                    returnResults.Add(s);
+                    returnResults.Add(GetSecRecord(r));
                 }
             }
             return returnResults; 
+        }
+
+        private Lib.Keychain.SecRecord GetSecRecord(Security.SecRecord secRecord)
+        {
+            return new Lib.Keychain.SecRecord
+            {
+                 AccessGroup = secRecord.AccessGroup,
+                 Account = secRecord.Account,
+                 ApplicationLabel= secRecord.ApplicationLabel,
+                 CreationDate  = (DateTime)secRecord.CreationDate,
+                 Description = secRecord.Description,
+                 Label = secRecord.Label,
+                 Path= secRecord.Path,
+                 SecurityDomain = secRecord.SecurityDomain,
+                 Subject = secRecord.Subject,
+                 Service = secRecord.Service
+            };
         }
 
         public bool ClearRecordsFromKeychain(string key)
         {
             bool results = false;
 
-            var queryRecord = new SecRecord(SecKind.GenericPassword)
+            var queryRecord = new Security.SecRecord(SecKind.GenericPassword)
             {
                 AccessGroup = key
             };

@@ -42,6 +42,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <!--
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
+      <HintPath>..\..\nuget\Microsoft.IdentityModel.Clients.ActiveDirectory.5.0.1-internal15501iosBrokerLogs\lib\monoandroid81\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    -->
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />
@@ -55,7 +60,6 @@
     <Compile Include="Intune\Enrollment\EnrollmentService.cs" />
     <Compile Include="Intune\FileProtection\FileProtectionManagerService.cs" />
     <Compile Include="Intune\Policies\PolicyService.cs" />
-    <Compile Include="Intune\Policies\IAndroidPolicyService.cs" />
     <Compile Include="Network\NetworkInterfaceInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,7 +119,7 @@
       <Version>2.1.0.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Intune.MAM.Xamarin.Android">
-      <Version>3.0.4035.4</Version>
+      <Version>3.0.4428.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

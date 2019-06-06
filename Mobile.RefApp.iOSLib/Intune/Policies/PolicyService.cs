@@ -10,7 +10,7 @@ namespace Mobile.RefApp.iOSLib.Intune.Policies
 {
     public class PolicyService 
         : IntuneMAMPolicyDelegate, 
-            IPolicyService, IIOSPolicyService
+            IPolicyService
     {
         private readonly ILoggingService _loggingService;
 

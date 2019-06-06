@@ -36,11 +36,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
+    <Reference Include="System.Net.Http" />
+    <!--     
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.0.5.1-internal15603iosBrokerLogs\lib\xamarinios10\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    -->
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
-      <Version>5.0.5</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.AppCenter.Distribute">
       <Version>2.0.0</Version>
     </PackageReference>
@@ -58,6 +61,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Intune.MAM.Xamarin.iOS">
       <Version>10.0.7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
+      <Version>5.0.5</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -82,7 +88,6 @@
     <Compile Include="Intune\Enrollment\EnrollmentService.cs" />
     <Compile Include="Intune\FileProtection\FileProtectionManagerService.cs" />
     <Compile Include="Intune\Policies\PolicyService.cs" />
-    <Compile Include="Intune\Policies\IIOSPolicyService.cs" />
     <Compile Include="Intune\Policies\DocumentPickerMode.cs" />
     <Compile Include="Network\NetworkInterfaceInfo.cs" />
   </ItemGroup>

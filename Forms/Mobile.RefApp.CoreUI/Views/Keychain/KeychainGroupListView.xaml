@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <base:ContentPageBase
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
@@ -23,21 +23,66 @@
                 Text="{Binding QueryText}">
             </SearchBar>
             <ActivityIndicator 
+                IsVisible="{Binding IsBusy}"
                 Color="Yellow" 
                 IsRunning="{Binding IsBusy}" /> 
             <ListView
-                Margin="0, 0, 0, 0" 
+                Margin="16, 0, 16, 0" 
                 HasUnevenRows="true"
                 BackgroundColor="Black"
                 SeparatorColor="Transparent"
                 SelectionMode="None"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="FillAndExpand" 
-                x:Name="lvKeychainKeys">
+                ItemsSource="{Binding KeychainKeys}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                        <ViewCell>
                             <ViewCell.View>
+                                <Frame 
+                                    Padding="0"
+                                    Margin="16, 20, 16, 20"
+                                    BackgroundColor="{DynamicResource PageBackgroundColor}">
+                                    <StackLayout>
+                                        <Label
+                                            Visual="Material"
+                                            Style="{DynamicResource TitleStyle}"
+                                            Grid.Column="0"
+                                            Grid.Row="1"
+                                            Margin="16, 0, 16, 0"
+                                            TextColor="White" 
+                                            Text="{Binding AccessGroup}">
+                                            
+                                        </Label>
+                                      <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="0"
+                                            Grid.Row="2"
+                                            Margin="16, 0, 16, 16"
+                                            TextColor="White" 
+                                            Text="{Binding Service}">
+                                        </Label>
+                                        <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="0"
+                                            Grid.Row="2"
+                                            Margin="16, 0, 16, 16"
+                                            TextColor="White" 
+                                            Text="{Binding Account}">
+                                        </Label>
+                                        <Label 
+                                            Visual="Material"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            Grid.Column="0"
+                                            Grid.Row="2"
+                                            Margin="16, 0, 16, 16"
+                                            TextColor="White" 
+                                            Text="{Binding CreationDate}">
+                                        </Label>
+                                    </StackLayout>
+                                </Frame>
                             </ViewCell.View>
                        </ViewCell>
                     </DataTemplate>
@@ -51,5 +96,4 @@
             </Button>
         </StackLayout>
     </ContentPage.Content>
-
 </base:ContentPageBase>

@@ -20,6 +20,11 @@ namespace Mobile.RefApp.Lib.ADAL
             [CallerLineNumber] int lineNumber = 0);
 
         IEnumerable<TokenCacheItem> GetCachedTokens(
+            string authority,
+            [CallerMemberName] string memberName = "",
+            [CallerLineNumber] int lineNumber = 0);
+
+        IEnumerable<TokenCacheItem> GetCachedTokens(
             Endpoint endpoint,
             [CallerMemberName] string memberName = "",
             [CallerLineNumber] int lineNumber = 0);

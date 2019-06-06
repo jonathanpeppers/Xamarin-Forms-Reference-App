@@ -268,14 +268,7 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
             if (tokens.Any())
             {
                 var token = tokens[0];
-            }
-                var cacheTokens = AzureTokenCacheService.GetTokenByUpn(upn);
-            foreach (var token in cacheTokens)
-            {
-                if (token.UserInfo?.UniqueId == aadId)
-                {
-                    return token.Token;
-                }
+                result = token.AccessToken;
             }
             return result;
         }

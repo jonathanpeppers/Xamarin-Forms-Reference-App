@@ -1,7 +1,7 @@
 ﻿using System;
+
 namespace Mobile.RefApp.Lib.Intune.Logging
 {
-
     public static class SDKModule
     {
         public static string Enrollment = "Enrollment";

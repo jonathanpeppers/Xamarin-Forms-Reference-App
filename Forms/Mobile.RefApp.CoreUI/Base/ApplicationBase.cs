@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Mobile.RefApp.Lib.Logging;
 using Unity;
 
 using Xamarin.Forms;
@@ -28,23 +28,30 @@ namespace Mobile.RefApp.CoreUI.Base
             MainPage = UseRootNavigationPage ? new NavigationPage(mainPage) : mainPage;
         }
 
-        protected abstract void InitializeContainer();
+		protected abstract void InitializeContainer();
         protected abstract bool UseRootNavigationPage { get; }
-        protected abstract Task<Page> CreateMainPage();
+		protected abstract Task<Page> CreateMainPage();
 
         public async Task<Page> CreatePage<T1, T2>(Dictionary<string, object> navigationParams = null)
             where T1 : ContentPageBase
             where T2 : ViewModelBase
         {
             var vm = Container.Resolve<T2>();
-            await vm.Initialize(navigationParams);
-
             var page = Container.Resolve<T1>();
-            vm.SetWeakPage(page);
-            page.BindingContext = vm;
-            page.Initialize();
+            try
+            {
+                vm.SetWeakPage(page);
+                await vm.Initialize(navigationParams);
 
-            return page;
+                page.BindingContext = vm;
+                page.Initialize();     
+            }
+            catch (Exception ex)
+            {
+                var loggingService = Container.Resolve<ILoggingService>();
+                loggingService.LogError(typeof(ApplicationBase), ex, ex.Message);
+            }
+            return page;    
         }
     }
 }

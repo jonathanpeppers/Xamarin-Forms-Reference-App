@@ -4944,68 +4944,68 @@ namespace Mobile.RefApp.DroidLib
 			// aapt resource value: 0x7f090034
 			public static int abc_toolbar_collapse_description = 2131296308;
 			
-			// aapt resource value: 0x7f090078
-			public static int app_name = 2131296376;
+			// aapt resource value: 0x7f09007a
+			public static int app_name = 2131296378;
 			
 			// aapt resource value: 0x7f090042
 			public static int appbar_scrolling_view_behavior = 2131296322;
 			
-			// aapt resource value: 0x7f090064
-			public static int appcenter_distribute_dialog_actioned_on_disabled_toast = 2131296356;
-			
-			// aapt resource value: 0x7f090065
-			public static int appcenter_distribute_download_progress_number_format = 2131296357;
-			
 			// aapt resource value: 0x7f090066
-			public static int appcenter_distribute_downloading_mandatory_update = 2131296358;
+			public static int appcenter_distribute_dialog_actioned_on_disabled_toast = 2131296358;
 			
 			// aapt resource value: 0x7f090067
-			public static int appcenter_distribute_install = 2131296359;
+			public static int appcenter_distribute_download_progress_number_format = 2131296359;
 			
 			// aapt resource value: 0x7f090068
-			public static int appcenter_distribute_install_ready_message = 2131296360;
+			public static int appcenter_distribute_downloading_mandatory_update = 2131296360;
 			
 			// aapt resource value: 0x7f090069
-			public static int appcenter_distribute_install_ready_title = 2131296361;
+			public static int appcenter_distribute_install = 2131296361;
 			
 			// aapt resource value: 0x7f09006a
-			public static int appcenter_distribute_notification_category = 2131296362;
+			public static int appcenter_distribute_install_ready_message = 2131296362;
 			
 			// aapt resource value: 0x7f09006b
-			public static int appcenter_distribute_unknown_sources_dialog_message = 2131296363;
+			public static int appcenter_distribute_install_ready_title = 2131296363;
 			
 			// aapt resource value: 0x7f09006c
-			public static int appcenter_distribute_unknown_sources_dialog_settings = 2131296364;
+			public static int appcenter_distribute_notification_category = 2131296364;
 			
 			// aapt resource value: 0x7f09006d
-			public static int appcenter_distribute_update_dialog_download = 2131296365;
+			public static int appcenter_distribute_unknown_sources_dialog_message = 2131296365;
 			
 			// aapt resource value: 0x7f09006e
-			public static int appcenter_distribute_update_dialog_message_mandatory = 2131296366;
+			public static int appcenter_distribute_unknown_sources_dialog_settings = 2131296366;
 			
 			// aapt resource value: 0x7f09006f
-			public static int appcenter_distribute_update_dialog_message_optional = 2131296367;
+			public static int appcenter_distribute_update_dialog_download = 2131296367;
 			
 			// aapt resource value: 0x7f090070
-			public static int appcenter_distribute_update_dialog_postpone = 2131296368;
+			public static int appcenter_distribute_update_dialog_message_mandatory = 2131296368;
 			
 			// aapt resource value: 0x7f090071
-			public static int appcenter_distribute_update_dialog_title = 2131296369;
+			public static int appcenter_distribute_update_dialog_message_optional = 2131296369;
 			
 			// aapt resource value: 0x7f090072
-			public static int appcenter_distribute_update_dialog_view_release_notes = 2131296370;
+			public static int appcenter_distribute_update_dialog_postpone = 2131296370;
 			
 			// aapt resource value: 0x7f090073
-			public static int appcenter_distribute_update_failed_dialog_ignore = 2131296371;
+			public static int appcenter_distribute_update_dialog_title = 2131296371;
 			
 			// aapt resource value: 0x7f090074
-			public static int appcenter_distribute_update_failed_dialog_message = 2131296372;
+			public static int appcenter_distribute_update_dialog_view_release_notes = 2131296372;
 			
 			// aapt resource value: 0x7f090075
-			public static int appcenter_distribute_update_failed_dialog_reinstall = 2131296373;
+			public static int appcenter_distribute_update_failed_dialog_ignore = 2131296373;
 			
 			// aapt resource value: 0x7f090076
-			public static int appcenter_distribute_update_failed_dialog_title = 2131296374;
+			public static int appcenter_distribute_update_failed_dialog_message = 2131296374;
+			
+			// aapt resource value: 0x7f090077
+			public static int appcenter_distribute_update_failed_dialog_reinstall = 2131296375;
+			
+			// aapt resource value: 0x7f090078
+			public static int appcenter_distribute_update_failed_dialog_title = 2131296376;
 			
 			// aapt resource value: 0x7f090043
 			public static int bottom_sheet_behavior = 2131296323;
@@ -5028,35 +5028,35 @@ namespace Mobile.RefApp.DroidLib
 			// aapt resource value: 0x7f090001
 			public static int fcm_fallback_notification_channel_label = 2131296257;
 			
-			// aapt resource value: 0x7f090077
-			public static int hello = 2131296375;
+			// aapt resource value: 0x7f090079
+			public static int hello = 2131296377;
 			
 			// aapt resource value: 0x7f090048
 			public static int hide_bottom_view_on_scroll_behavior = 2131296328;
 			
-			// aapt resource value: 0x7f09005f
-			public static int intune_account_disallowed = 2131296351;
-			
-			// aapt resource value: 0x7f090060
-			public static int intune_account_disallowed_fmt = 2131296352;
-			
 			// aapt resource value: 0x7f090061
-			public static int intune_account_removed_fmt = 2131296353;
-			
-			// aapt resource value: 0x7f09005e
-			public static int intune_allowed_account_explanation = 2131296350;
-			
-			// aapt resource value: 0x7f09005d
-			public static int intune_allowed_accounts_description = 2131296349;
+			public static int intune_account_disallowed = 2131296353;
 			
 			// aapt resource value: 0x7f090062
-			public static int intune_allowed_accounts_explanation_all_added = 2131296354;
-			
-			// aapt resource value: 0x7f09005c
-			public static int intune_allowed_accounts_title = 2131296348;
+			public static int intune_account_disallowed_fmt = 2131296354;
 			
 			// aapt resource value: 0x7f090063
-			public static int library_name = 2131296355;
+			public static int intune_account_removed_fmt = 2131296355;
+			
+			// aapt resource value: 0x7f090060
+			public static int intune_allowed_account_explanation = 2131296352;
+			
+			// aapt resource value: 0x7f09005f
+			public static int intune_allowed_accounts_description = 2131296351;
+			
+			// aapt resource value: 0x7f090064
+			public static int intune_allowed_accounts_explanation_all_added = 2131296356;
+			
+			// aapt resource value: 0x7f09005e
+			public static int intune_allowed_accounts_title = 2131296350;
+			
+			// aapt resource value: 0x7f090065
+			public static int library_name = 2131296357;
 			
 			// aapt resource value: 0x7f090002
 			public static int mr_button_content_description = 2131296258;
@@ -5168,6 +5168,12 @@ namespace Mobile.RefApp.DroidLib
 			
 			// aapt resource value: 0x7f090059
 			public static int wg_offline_initialization_failure = 2131296345;
+			
+			// aapt resource value: 0x7f09005d
+			public static int wg_offline_mamca_failed_message = 2131296349;
+			
+			// aapt resource value: 0x7f09005c
+			public static int wg_offline_mamca_failed_title = 2131296348;
 			
 			// aapt resource value: 0x7f090058
 			public static int wg_offline_must_restart = 2131296344;

@@ -1,15 +1,17 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Mobile.RefApp.CoreUI.Base;
 using Mobile.RefApp.CoreUI.Interfaces;
 using Mobile.RefApp.Lib.ADAL;
 using Mobile.RefApp.Lib.Keychain;
 using Mobile.RefApp.Lib.Logging;
+
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
@@ -29,7 +31,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             set => SetProperty(ref _queryText, value);
         }
 
-        public ObservableCollection<string> KeychainKeys; 
+        public ObservableCollection<SecRecord> KeychainKeys { get; }
 
         public ICommand SearchCommand { get; private set; }
 
@@ -43,8 +45,9 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             _endpointService = endpointService;
 
             Title = "Keychain Group Cache";
-            KeychainKeys = new ObservableCollection<string>();
+            KeychainKeys = new ObservableCollection<SecRecord>();
             SearchCommand = new Command(DoSearch);
+            
         }
 
         public override async Task Initialize(Dictionary<string, object> navigationsParams = null)
@@ -54,11 +57,8 @@ namespace Mobile.RefApp.CoreUI.ViewModels
                 var endpoints = await _endpointService.GetEndpointsByPlatform(App.CurrentPlatform);
                 if (endpoints.Any())
                 {
-                    IsBusy = true;
                     _endpoint = endpoints[0];
-                    QueryText = $"{_endpoint.iOSTeamId}.{_endpoint.iOSKeychainSecurityGroup}";
-                    DoSearch();
-                    IsBusy = false;
+                    DoSearch($"{_endpoint.iOSTeamId}.{_endpoint.iOSKeychainSecurityGroup}");
                 } 
             }
             catch (System.Exception ex)
@@ -67,20 +67,28 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             }
         }
 
-        private void DoSearch()
+        private void DoSearch(object queryText = null)
         {
             try
             {
-                if (!string.IsNullOrEmpty(QueryText))
+                string query = (queryText == null) ? QueryText : (string)queryText;
+                IsBusy = true;
+                if (!string.IsNullOrEmpty(query))
                 {
                     KeychainKeys.Clear();
-                    var results = _keychainService.GetRecordsFromKeychain(QueryText);
+                    var results = _keychainService.GetRecordsFromKeychain(query);
                     if (results.Any())
                     {
-                        foreach (var result in results)
-                            KeychainKeys.Add(result);
+                        foreach (var r in results)
+                        {
+                            KeychainKeys.Add(r);
+                            System.Console.WriteLine($"{r.AccessGroup} {r.Account} {r.Service} {r.CreationDate}");
+                        }
                     }
                 }
+                IsBusy = false;
+
+                this.Page.BindingContext = this;
             }
             catch (System.Exception ex)
             {

@@ -23,7 +23,6 @@ using Mobile.RefApp.DroidLib.Intune.Enrollment;
 using Mobile.RefApp.DroidLib.Intune.Policies;
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Mobile.RefApp.Lib.Intune.Logging;
 
 namespace Mobile.RefApp.CoreUI.Droid
 {

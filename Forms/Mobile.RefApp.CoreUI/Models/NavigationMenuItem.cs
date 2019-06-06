@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace Mobile.RefApp.CoreUI.Models
 {
@@ -44,6 +43,6 @@ namespace Mobile.RefApp.CoreUI.Models
         public string AutomationId { get; set; }
         public string ImageName { get; set; }
         public string Description { get; set; }
-        public ImageSource LogoSource => ImageSource.FromResource(ImageName); 
+        public ImageSource LogoSource => ImageSource.FromResource(ImageName);
     }
 }

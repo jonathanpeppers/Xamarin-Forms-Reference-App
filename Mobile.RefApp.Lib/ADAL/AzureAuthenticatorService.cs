@@ -81,6 +81,7 @@ namespace Mobile.RefApp.Lib.ADAL
 												   memberName,
 												   lineNumber,
 												   ComposePropertyValues(endpoint));
+
                     if (string.IsNullOrEmpty(endpoint.ExtraParameters))
                     {
                         results = await authContext.AcquireTokenAsync(endpoint.ResourceId,
@@ -158,15 +159,12 @@ namespace Mobile.RefApp.Lib.ADAL
                 }
 
                 //
-                //add result to token cache
-                var cacheToken = AzureTokenCacheService.CreateCacheToken(results, endpoint);
-                AzureTokenCacheService.AddToken(cacheToken);
+                //convert to cache token to send back
+                var cacheToken = CacheToken.GetCacheToken(endpoint, results);
                 return cacheToken;
             }
             else
-			  {
                 throw new Exception("ERROR:  Endpoint not Active, please make Endpoint Active and try again.");
-			  }
         }
 
 
@@ -183,7 +181,7 @@ namespace Mobile.RefApp.Lib.ADAL
                 //https://aka.ms/adal-net-ios-keychain-access
 
 #if iOS
-                authContext.KeychainSecurityGroup = endpoint.iOSKeychainSecurityGroup;
+                    authContext.iOSKeychainSecurityGroup = endpoint.iOSKeychainSecurityGroup;
 #endif
 
                 _logBuilder.Clear();
@@ -216,6 +214,9 @@ namespace Mobile.RefApp.Lib.ADAL
                                          memberName,
                                          lineNumber,
                                          astae.Data);
+                //get the token regularly since it's not in cache
+                //per documentation:  https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/AcquireTokenSilentAsync-using-a-cached-token
+                return await AuthenticateEndpoint(endpoint);
             }
             catch (AdalClaimChallengeException acce)
             {
@@ -253,9 +254,8 @@ namespace Mobile.RefApp.Lib.ADAL
                                         null);
             }
 
-            //add result to cache
-            var cacheToken = AzureTokenCacheService.CreateCacheToken(results, endpoint);
-            AzureTokenCacheService.AddToken(cacheToken);
+            //convert to cache token to send back
+            var cacheToken = CacheToken.GetCacheToken(endpoint, results);
             return cacheToken;
         }
 
@@ -268,6 +268,25 @@ namespace Mobile.RefApp.Lib.ADAL
             try
             {
                 var authContext = new AuthenticationContext(endpoint.Authority);
+                tokenCache = authContext.TokenCache.ReadItems();
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+            }
+
+            return tokenCache;
+        }
+
+        public IEnumerable<TokenCacheItem> GetCachedTokens(
+            string authority,
+            [CallerMemberName] string memberName = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            IEnumerable<TokenCacheItem> tokenCache = null;
+            try
+            {
+                var authContext = new AuthenticationContext(authority);
                 tokenCache = authContext.TokenCache.ReadItems();
             }
             catch (Exception ex)

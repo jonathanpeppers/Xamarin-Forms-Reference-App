@@ -15,6 +15,7 @@ namespace Mobile.RefApp.Lib.ADAL
         public string ApplicationId { get; set; }
         public string Authority { get; set; }
         public string RedirectUri { get; set; }
+        public string ResourceBaseUri { get; set; }
         public string ResourceId  { get; set; }   
         public string ExtraParameters { get; set; }
     }
