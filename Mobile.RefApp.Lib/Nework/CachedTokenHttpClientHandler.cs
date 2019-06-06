@@ -32,16 +32,14 @@ namespace Mobile.RefApp.Lib.Network
         {
             try
             {
-                var tokens = _azureAuthenticatorEndpointService.GetCachedTokens(_endpoint);
-                var token = tokens.FirstOrDefault();
-
+                var token = await _azureAuthenticatorEndpointService.AcquireTokenSilentAsync(_endpoint);
                 if (token != null)
                 {
                     //if old token exist - get rid of it
                     if (request.Headers.Contains("Authorization"))
                         request.Headers.Remove("Authorization");
 
-                    request.Headers.Add("Authorization", $"Bearer {token.AccessToken}");
+                    request.Headers.Add("Authorization", $"Bearer {token.Token}");
                 }
             }
             catch (Exception ex)

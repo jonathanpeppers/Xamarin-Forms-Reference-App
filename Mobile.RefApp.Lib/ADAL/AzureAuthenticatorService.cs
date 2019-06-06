@@ -72,7 +72,7 @@ namespace Mobile.RefApp.Lib.ADAL
                     authContext.iOSKeychainSecurityGroup = endpoint.iOSKeychainSecurityGroup;
 #endif
 
-                    _logBuilder.Clear();
+                        _logBuilder.Clear();
 					    LoggerCallbackHandler.LogCallback = AdalLog;
 					    LoggerCallbackHandler.PiiLoggingEnabled = true;
 
@@ -158,10 +158,7 @@ namespace Mobile.RefApp.Lib.ADAL
 											null);
                 }
 
-                //
-                //convert to cache token to send back
-                var cacheToken = CacheToken.GetCacheToken(endpoint, results);
-                return cacheToken;
+                return CacheToken.GetCacheToken(endpoint, results);
             }
             else
                 throw new Exception("ERROR:  Endpoint not Active, please make Endpoint Active and try again.");
@@ -254,9 +251,7 @@ namespace Mobile.RefApp.Lib.ADAL
                                         null);
             }
 
-            //convert to cache token to send back
-            var cacheToken = CacheToken.GetCacheToken(endpoint, results);
-            return cacheToken;
+            return CacheToken.GetCacheToken(endpoint, results);
         }
 
         public IEnumerable<TokenCacheItem> GetCachedTokens(
