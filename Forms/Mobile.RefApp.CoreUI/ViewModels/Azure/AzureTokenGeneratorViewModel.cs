@@ -17,11 +17,33 @@ using Xamarin.Forms.Internals;
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class AzureTokenGeneratorViewModel 
-        : ViewModelBase
+        : BaseViewModel
     {
-        private readonly ILoggingService _loggingService;
         private readonly IAzureAuthenticatorEndpointService _authenticationService;
         private readonly IEndpointService _endpointService;
+
+        private Endpoint _selectedEndpoint;
+        public Endpoint SelectedEndpoint
+        {
+            get => _selectedEndpoint;
+            set
+            {
+                SetProperty(ref _selectedEndpoint, value);
+
+                RedirectUri = _selectedEndpoint.RedirectUri;
+                Audience = _selectedEndpoint.ResourceId;
+                AppId = _selectedEndpoint.ApplicationId;
+                TentantUri = _selectedEndpoint.Authority;
+                UseBroker = _selectedEndpoint.UseBroker;
+            }
+        }
+
+        private CacheToken _authenticationResult;
+        public CacheToken AuthenticationResult
+        {
+            get => _authenticationResult;
+            set => SetProperty(ref _authenticationResult, value);
+        }
 
         private string _appId;
         public string AppId
@@ -58,34 +80,18 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             set => SetProperty(ref _status, value);
         }
 
+        private bool _isTokenAvailable;
+        public bool IsTokenAvailable
+        {
+            get => IsTokenAvailable;
+            set => SetProperty(ref _isTokenAvailable, value);
+        }
+
         private bool _useBroker;
         public bool UseBroker
         {
             get => _useBroker;
             set => SetProperty(ref _useBroker, value);
-        }
-
-        private Endpoint _selectedEndpoint;
-        public Endpoint SelectedEndpoint
-        {
-            get => _selectedEndpoint;
-            set 
-            { 
-                SetProperty(ref _selectedEndpoint, value);
-
-                RedirectUri = _selectedEndpoint.RedirectUri;
-                Audience = _selectedEndpoint.ResourceId;
-                AppId = _selectedEndpoint.ApplicationId;
-                TentantUri = _selectedEndpoint.Authority;
-                UseBroker = _selectedEndpoint.UseBroker;
-            }
-        }
-
-        private CacheToken _cacheToken;
-        public CacheToken Token
-        {
-            get => _cacheToken;
-            set => SetProperty(ref _cacheToken, value);
         }
 
         public ObservableCollection<Endpoint> EndPoints { get; set; }
@@ -97,9 +103,9 @@ namespace Mobile.RefApp.CoreUI.ViewModels
         public AzureTokenGeneratorViewModel(
             ILoggingService loggingService, 
             IAzureAuthenticatorEndpointService authenticationService,
-            IEndpointService endpointService)
+            IEndpointService endpointService) 
+            : base(loggingService)
         {
-            _loggingService = loggingService;
             _authenticationService = authenticationService;
             _endpointService = endpointService;
             EndPoints = new ObservableCollection<Endpoint>();
@@ -127,13 +133,14 @@ namespace Mobile.RefApp.CoreUI.ViewModels
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
+                Lib.ADAL.Endpoint endpoint = SelectedEndpoint;
                 try
                 {
                     IsBusy = true;
-                    Token = null;
-                    if (SelectedEndpoint == null)
+                    AuthenticationResult = null;
+                    if (endpoint == null)
                     {
-                        var endpoint = new Lib.ADAL.Endpoint
+                        endpoint = new Lib.ADAL.Endpoint
                         {
                             ApplicationId = this.AppId,
                             Authority = this.TentantUri,
@@ -145,21 +152,20 @@ namespace Mobile.RefApp.CoreUI.ViewModels
                             UseBroker = this.UseBroker,
                             Platform = App.CurrentPlatform
                         };
+                    }
 
-                        Token = await _authenticationService.AuthenticateEndpoint(endpoint);
-                    }
-                    else
-                    {
-                        Token = await _authenticationService.AuthenticateEndpoint(SelectedEndpoint);
-                    }
-                    if (Token != null)
-                        SetTokenStatusMessage(Token.UserInfo.GivenName, Token.UserInfo.FamilyName, Token.ExpiresOn);
+                    AuthenticationResult = await _authenticationService.AuthenticateEndpoint(SelectedEndpoint);
+
+                    if (AuthenticationResult != null)
+                        SetTokenStatusMessage(AuthenticationResult.UserInfo.GivenName, AuthenticationResult.UserInfo.FamilyName, AuthenticationResult.ExpiresOn);
                     else
                         this.Status = "Failed to get token";
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.LogError(typeof(AzureTokenGeneratorViewModel), ex, ex.Message);
+                    LoggingService.LogError(typeof(AzureTokenGeneratorViewModel), ex, ex.Message);
+                    Status = $"Error: {ex.Message}";
+                    IsTokenAvailable = false;
                 }
                 IsBusy = false;
             });
@@ -167,11 +173,11 @@ namespace Mobile.RefApp.CoreUI.ViewModels
 
         private async Task DoViewTokenDetailsCommand()
         {
-            if (Token != null)
+            if (AuthenticationResult != null)
             {
                 var parameters = new Dictionary<string, object>
             {
-                { "token", Token }
+                { "token", AuthenticationResult }
             };
                 await PushAsync<AzureTokenDetailViewerView, AzureTokenDetailViewerViewModel>(parameters, true);
             }
@@ -179,11 +185,11 @@ namespace Mobile.RefApp.CoreUI.ViewModels
 
         private async Task DoViewTokenRawCommand()
         {
-            if (Token != null)
+            if (AuthenticationResult != null)
             {
                 var parameters = new Dictionary<string, object>
             {
-                { "token", Token }
+                { "token", AuthenticationResult }
             };
                 await PushAsync<AzureTokenRawViewerView, AzureTokenRawViewerViewModel>(parameters, true);
             }

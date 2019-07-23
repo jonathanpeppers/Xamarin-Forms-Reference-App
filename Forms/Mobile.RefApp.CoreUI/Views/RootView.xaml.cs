@@ -5,7 +5,8 @@ using Xamarin.Forms;
 
 namespace Mobile.RefApp.CoreUI.Views
 {
-    public partial class RootView : ContentPageBase
+    public partial class RootView 
+        : BaseContentPage
     {
         public RootView()
         {

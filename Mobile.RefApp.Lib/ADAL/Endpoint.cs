@@ -10,6 +10,7 @@ namespace Mobile.RefApp.Lib.ADAL
         //
         //Required by ADAL
         //
+        public bool EnableLogging { get; set; }
         public string iOSTeamId { get; set; }
         public string iOSKeychainSecurityGroup { get; set; }
         public string ApplicationId { get; set; }

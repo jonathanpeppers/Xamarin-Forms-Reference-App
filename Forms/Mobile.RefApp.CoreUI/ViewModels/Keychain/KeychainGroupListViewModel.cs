@@ -16,9 +16,8 @@ using Xamarin.Forms.Internals;
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class KeychainGroupListViewModel
-        : ViewModelBase
+        : BaseViewModel
     {
-        private readonly ILoggingService _loggingService;
         private readonly IEndpointService _endpointService;
         private readonly IKeychainService _keychainService;
 
@@ -39,8 +38,8 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             ILoggingService loggingService,
             IKeychainService keychainService,
             IEndpointService endpointService)
+            : base(loggingService)
         {
-            _loggingService = loggingService;
             _keychainService = keychainService;
             _endpointService = endpointService;
 
@@ -63,7 +62,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             }
             catch (System.Exception ex)
             {
-                _loggingService.LogError(typeof(KeychainGroupListViewModel), ex, ex.Message);
+                LoggingService.LogError(typeof(KeychainGroupListViewModel), ex, ex.Message);
             }
         }
 
@@ -92,7 +91,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             }
             catch (System.Exception ex)
             {
-                _loggingService.LogError(typeof(KeychainGroupListViewModel), ex, ex.Message);
+                LoggingService.LogError(typeof(KeychainGroupListViewModel), ex, ex.Message);
             }
         }
     }

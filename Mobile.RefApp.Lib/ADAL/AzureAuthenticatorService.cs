@@ -72,15 +72,13 @@ namespace Mobile.RefApp.Lib.ADAL
                     authContext.iOSKeychainSecurityGroup = endpoint.iOSKeychainSecurityGroup;
 #endif
 
-                        _logBuilder.Clear();
-					    LoggerCallbackHandler.LogCallback = AdalLog;
-					    LoggerCallbackHandler.PiiLoggingEnabled = true;
+                    _logBuilder.Clear();
 
-					    _loggingService.LogInformation(typeof(AzureAuthenticatorService),
-												   $"Before Acquiring Token values",
-												   memberName,
-												   lineNumber,
-												   ComposePropertyValues(endpoint));
+                    if (endpoint.EnableLogging)
+                    {
+                        LoggerCallbackHandler.LogCallback = AdalLog;
+                        LoggerCallbackHandler.PiiLoggingEnabled = endpoint.EnableLogging;
+                    }
 
                     if (string.IsNullOrEmpty(endpoint.ExtraParameters))
                     {
@@ -94,68 +92,78 @@ namespace Mobile.RefApp.Lib.ADAL
                         results = await authContext.AcquireTokenAsync(endpoint.ResourceId,
                             endpoint.ApplicationId,
                             new Uri(endpoint.RedirectUri),
-                            platformParameters, 
+                            platformParameters,
                             UserIdentifier.AnyUser,
                             endpoint.ExtraParameters).WithTimeout(5000);
                     }
-
-                    _loggingService.LogInformation(typeof(AzureAuthenticatorService),
-												   $"{Constants.AzureAuthenticator.AZURELOGTAG} Logs: {_logBuilder?.ToString()}");
-                    _loggingService.LogInformation(typeof(AzureAuthenticatorService),
-												  $"{Constants.AzureAuthenticator.AZURELOGTAG} Log: Access Token: {results?.AccessToken}\n\nAccess Token Type: {results?.AccessTokenType}\n\nExpires On: {results?.ExpiresOn.ToString()}");
                 }
                 catch (AdalUserMismatchException aume)
-                { 
-					    _loggingService.LogError(typeof(AzureAuthenticatorService),
-											 (System.Exception)aume,
-											 $"{Constants.AzureAuthenticator.AZURELOGERRORTAG} :AdalUserMismatchException",
-											 memberName,
-											 lineNumber,
-											 $"Returned User: {aume?.ReturnedUser} Requested User: {aume?.RequestedUser}",
-											 $"Error Code:: {aume?.ErrorCode}");
+                {
+                    if (endpoint.EnableLogging)
+                    {
+                        _loggingService.LogError(typeof(AzureAuthenticatorService),
+                                             (System.Exception)aume,
+                                             $"{Constants.AzureAuthenticator.AZURELOGERRORTAG} :AdalUserMismatchException",
+                                             memberName,
+                                             lineNumber,
+                                             $"Returned User: {aume?.ReturnedUser} Requested User: {aume?.RequestedUser}",
+                                             $"Error Code:: {aume?.ErrorCode}");
+                    }
                 }
                 catch (AdalSilentTokenAcquisitionException astae)
                 {
-					    _loggingService.LogError(typeof(AzureAuthenticatorService),
-											 (System.Exception)astae,
-											 $"AdalSilientTokenAquisitionException {astae?.ErrorCode}",
-											 memberName,
-											 lineNumber,
-											 astae.Data);
+                    if (endpoint.EnableLogging)
+                    {
+                        _loggingService.LogError(typeof(AzureAuthenticatorService),
+                                             (System.Exception)astae,
+                                             $"AdalSilientTokenAquisitionException {astae?.ErrorCode}",
+                                             memberName,
+                                             lineNumber,
+                                             astae.Data);
+                    }
                 }
                 catch (AdalClaimChallengeException acce)
                 {
-					    _loggingService.LogError(typeof(AzureAuthenticatorService),
-											(System.Exception)acce,
-											$"AdalClaimsChallengeException:: Claims: {acce.Claims}",
-											 memberName,
-											 lineNumber,
-											 acce.Data,
-											 acce.Headers,
-											 acce.ServiceErrorCodes,
-											 acce.StatusCode);
+                    if (endpoint.EnableLogging)
+                    {
+                        _loggingService.LogError(typeof(AzureAuthenticatorService),
+                                            (System.Exception)acce,
+                                            $"AdalClaimsChallengeException:: Claims: {acce.Claims}",
+                                             memberName,
+                                             lineNumber,
+                                             acce.Data,
+                                             acce.Headers,
+                                             acce.ServiceErrorCodes,
+                                             acce.StatusCode);
+                    }
                     throw;
                 }
                 catch (AdalServiceException ase)
                 {
-                    _loggingService.LogError(typeof(AzureAuthenticatorService),
-											(System.Exception)ase,
-											$"{Constants.AzureAuthenticator.AZURELOGERRORTAG}: AdalServiceException::",
-											memberName,
-											lineNumber,
-											ase.Data,
-											ase.Headers,
-											ase.ServiceErrorCodes,
-											ase.StatusCode);
+                    if (endpoint.EnableLogging)
+                    {
+                        _loggingService.LogError(typeof(AzureAuthenticatorService),
+                                            (System.Exception)ase,
+                                            $"{Constants.AzureAuthenticator.AZURELOGERRORTAG}: AdalServiceException::",
+                                            memberName,
+                                            lineNumber,
+                                            ase.Data,
+                                            ase.Headers,
+                                            ase.ServiceErrorCodes,
+                                            ase.StatusCode);
+                    }
                 }
                 catch (Exception e)
-                { 
-					    _loggingService.LogError(typeof(AzureAuthenticatorService),
-											e,
-											e.Message,
-											memberName,
-											lineNumber,
-											null);
+                {
+                    if (endpoint.EnableLogging)
+                    {
+                        _loggingService.LogError(typeof(AzureAuthenticatorService),
+                                            e,
+                                            e.Message,
+                                            memberName,
+                                            lineNumber,
+                                            null);
+                    }
                 }
 
                 return CacheToken.GetCacheToken(endpoint, results);
@@ -182,42 +190,47 @@ namespace Mobile.RefApp.Lib.ADAL
 #endif
 
                 _logBuilder.Clear();
-                LoggerCallbackHandler.LogCallback = AdalLog;
-                LoggerCallbackHandler.PiiLoggingEnabled = true;
-
-                _loggingService.LogInformation(typeof(AzureAuthenticatorService),
-                                               $"Before Acquiring Silent Token values",
-                                               memberName,
-                                               lineNumber,
-                                               ComposePropertyValues(endpoint));
+                if (endpoint.EnableLogging)
+                {
+                    LoggerCallbackHandler.LogCallback = AdalLog;
+                    LoggerCallbackHandler.PiiLoggingEnabled = true;
+                }
 
                 results = await authContext.AcquireTokenSilentAsync(endpoint.ResourceId, endpoint.ApplicationId);
             }
             catch (AdalUserMismatchException aume)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService),
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService),
                                          (System.Exception)aume,
                                          $"{Constants.AzureAuthenticator.AZURELOGERRORTAG} :AdalUserMismatchException",
                                          memberName,
                                          lineNumber,
                                          $"Returned User: {aume?.ReturnedUser} Requested User: {aume?.RequestedUser}",
                                          $"Error Code:: {aume?.ErrorCode}");
+                }
             }
             catch (AdalSilentTokenAcquisitionException astae)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService),
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService),
                                          (System.Exception)astae,
                                          $"AdalSilientTokenAquisitionException {astae?.ErrorCode}",
                                          memberName,
                                          lineNumber,
                                          astae.Data);
+                }
                 //get the token regularly since it's not in cache
                 //per documentation:  https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/AcquireTokenSilentAsync-using-a-cached-token
                 return await AuthenticateEndpoint(endpoint);
             }
             catch (AdalClaimChallengeException acce)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService),
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService),
                                         (System.Exception)acce,
                                         $"AdalClaimsChallengeException:: Claims: {acce.Claims}",
                                          memberName,
@@ -226,11 +239,13 @@ namespace Mobile.RefApp.Lib.ADAL
                                          acce.Headers,
                                          acce.ServiceErrorCodes,
                                          acce.StatusCode);
-
+                }
             }
             catch (AdalServiceException ase)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService),
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService),
                                         (System.Exception)ase,
                                         $"{Constants.AzureAuthenticator.AZURELOGERRORTAG}: AdalServiceException::",
                                         memberName,
@@ -239,16 +254,19 @@ namespace Mobile.RefApp.Lib.ADAL
                                         ase.Headers,
                                         ase.ServiceErrorCodes,
                                         ase.StatusCode);
-
+                }
             }
             catch (Exception e)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService),
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService),
                                         e,
                                         e.Message,
                                         memberName,
                                         lineNumber,
                                         null);
+                }
             }
 
             return CacheToken.GetCacheToken(endpoint, results);
@@ -267,7 +285,10 @@ namespace Mobile.RefApp.Lib.ADAL
             }
             catch (Exception ex)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+                }
             }
 
             return tokenCache;
@@ -306,7 +327,10 @@ namespace Mobile.RefApp.Lib.ADAL
             }
             catch (Exception ex)
             {
-                _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+                if (endpoint.EnableLogging)
+                {
+                    _loggingService.LogError(typeof(AzureAuthenticatorService), ex, ex.Message);
+                }
             }
             return results;
         }

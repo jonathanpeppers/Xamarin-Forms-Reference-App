@@ -91,7 +91,7 @@ namespace Mobile.RefApp.Lib.Security
 
         private static byte[] CreateKey(string initializer, int keyBytes = 32)
         {
-            byte[] salt = { 89, 79, 69, 59, 49, 39, 29, 19 };
+            byte[] salt = { 92, 82, 62, 52, 42, 32, 22, 14 };
             int iterations = 300;
             var keyGenerator = new Rfc2898DeriveBytes(initializer, salt, iterations);
             return keyGenerator.GetBytes(keyBytes);

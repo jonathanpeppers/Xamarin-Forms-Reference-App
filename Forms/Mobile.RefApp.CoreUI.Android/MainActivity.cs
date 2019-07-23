@@ -88,13 +88,15 @@ namespace Mobile.RefApp.CoreUI.Droid
             container.RegisterType<ILoggingService, LoggingService>();
             container.RegisterType<IPlatformHttpClientHandler, AndroidHttpClientHandler>();
             container.RegisterType<IAzurePlatformParameters, AzurePlatformParameters>();
-            container.RegisterType<IIntuneService, IntuneService>();
-            container.RegisterType<INetworkInterfaceInfo, NetworkInterfaceInfo>();
             container.RegisterType<IAzureAuthenticatorEndpointService, AzureAuthenticatorService>();
 
+            container.RegisterType<IIntuneService, IntuneService>();
             container.RegisterType<IEnrollmentService, EnrollmentService>();
             container.RegisterType<IPolicyService, PolicyService>();
             container.RegisterType<Lib.Intune.IDiagnosticService, DroidLib.Intune.DiagnosticsService>();
+
+            container.RegisterType<INetworkInterfaceInfo, NetworkInterfaceInfo>();
+           
         }
     }
 }

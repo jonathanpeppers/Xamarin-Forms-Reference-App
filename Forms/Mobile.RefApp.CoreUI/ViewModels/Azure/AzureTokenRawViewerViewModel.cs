@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Mobile.RefApp.CoreUI.Base;
 using Mobile.RefApp.Lib.ADAL;
+using Mobile.RefApp.Lib.Logging;
 
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class AzureTokenRawViewerViewModel
-        : ViewModelBase
+        : BaseViewModel
     {
         private CacheToken _cacheToken;
         public CacheToken CacheToken
@@ -15,7 +16,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             set => SetProperty(ref _cacheToken, value);
         }
 
-        public AzureTokenRawViewerViewModel()
+        public AzureTokenRawViewerViewModel(ILoggingService loggingService) : base (loggingService)
         {
             Title = "Raw Token Viewer";
         }

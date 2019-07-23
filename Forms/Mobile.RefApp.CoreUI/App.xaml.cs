@@ -20,10 +20,11 @@ using Mobile.RefApp.Lib.Core;
 
 namespace Mobile.RefApp.CoreUI
 {
-    public partial class App : ApplicationBase
+    public partial class App 
+        : RefAppApplication
     {
-        public static Platform CurrentPlatform 
-        { 
+        public static Platform CurrentPlatform
+        {
             get
             {
                 switch (Xamarin.Forms.Device.RuntimePlatform)
@@ -43,7 +44,6 @@ namespace Mobile.RefApp.CoreUI
                 }
             }
         }
-         
 
         public App()
         {

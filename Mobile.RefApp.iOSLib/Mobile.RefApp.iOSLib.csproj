@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <LangVersion>7.1</LangVersion> 
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -44,26 +45,14 @@
     -->
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AppCenter.Distribute">
-      <Version>2.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AppCenter.Crashes">
-      <Version>2.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AppCenter">
-      <Version>2.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AppCenter.Analytics">
-      <Version>2.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AppCenter.Push">
-      <Version>2.0.0</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.Intune.MAM.Xamarin.iOS">
-      <Version>10.0.7</Version>
+      <Version>11.0.8</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
-      <Version>5.0.5</Version>
+      <Version>5.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Essentials">
+      <Version>1.2.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +65,7 @@
     <Folder Include="Intune\Enrollment\" />
     <Folder Include="Intune\FileProtection\" />
     <Folder Include="Intune\Policies\" />
+    <Folder Include="IO\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +80,7 @@
     <Compile Include="Intune\Policies\PolicyService.cs" />
     <Compile Include="Intune\Policies\DocumentPickerMode.cs" />
     <Compile Include="Network\NetworkInterfaceInfo.cs" />
+    <Compile Include="IO\FileSystemService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mobile.RefApp.Lib\Mobile.RefApp.Lib.csproj">

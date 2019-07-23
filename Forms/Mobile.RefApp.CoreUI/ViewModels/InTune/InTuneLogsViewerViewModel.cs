@@ -9,16 +9,15 @@ using Mobile.RefApp.Lib.Logging;
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class InTuneLogsViewerViewModel
-        : ViewModelBase
+        : BaseViewModel
     {
-        private readonly ILoggingService _loggingService;
 
         public ObservableCollection<LoggingMessage> Logs { get; private set; }
 
         public InTuneLogsViewerViewModel(
             ILoggingService loggingService)
+            :base (loggingService)
         {
-            _loggingService = loggingService;
             Logs = new ObservableCollection<LoggingMessage>();
             Title = "InTune Log Viewer";
         }
@@ -36,7 +35,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             }
             catch(Exception ex)
             {
-                _loggingService.LogError(typeof(InTuneLogsViewerViewModel), ex, ex.Message);
+                LoggingService.LogError(typeof(InTuneLogsViewerViewModel), ex, ex.Message);
             }
         }
     }

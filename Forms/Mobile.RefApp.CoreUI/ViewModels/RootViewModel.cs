@@ -7,17 +7,16 @@ using Mobile.RefApp.CoreUI.Factories;
 using Mobile.RefApp.CoreUI.Models;
 using Mobile.RefApp.CoreUI.Views;
 using Mobile.RefApp.Lib.Intune;
-
+using Mobile.RefApp.Lib.Logging;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class RootViewModel
-        : ViewModelBase
+        : BaseViewModel
     {
-        private readonly IDiagnosticService _diagnosticServices;
-
+        private readonly Mobile.RefApp.Lib.Intune.IDiagnosticService _diagnosticService;
         public string _version;
         public string Version
         {
@@ -36,10 +35,14 @@ namespace Mobile.RefApp.CoreUI.ViewModels
 
         public ObservableCollection<NavigationMenuItem> MenuItems { get; private set; }
 
-        public RootViewModel(IDiagnosticService diagnosticServices)
+        public RootViewModel(
+            ILoggingService loggingService,
+            Mobile.RefApp.Lib.Intune.IDiagnosticService diagnosticService) 
+            : base (loggingService)
         {
             Title = "Reference App";
-            _diagnosticServices = diagnosticServices;
+
+            _diagnosticService = diagnosticService;
 
             MenuItems = new ObservableCollection<NavigationMenuItem>(MenuFactory.GetMenuItems());
         }
@@ -61,9 +64,6 @@ namespace Mobile.RefApp.CoreUI.ViewModels
                     case MenuPageType.AzureTokenGen5000:
                         await PushAsync<AzureTokenGeneratorView, AzureTokenGeneratorViewModel>();
                         break;
-                    case MenuPageType.AzureTokenCache:
-                        await PushAsync<AzureTokenCacheListView, AzureTokenCacheListViewModel>();
-                        break;
                     case MenuPageType.iOSKeychainGroup:
                         await PushAsync<KeychainGroupListView, KeychainGroupListViewModel>();
                         break;
@@ -71,7 +71,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
                         await PushAsync<InTuneEnrollmentView, InTuneEnrollmentViewModel>();
                         break;
                     case MenuPageType.InTuneDiagnostics:
-                        _diagnosticServices.DisplayDiagnostics(true);
+                        _diagnosticService.DisplayDiagnostics(true);
                         break;
                     case MenuPageType.InTuneLogs:
                         await PushAsync<InTuneLogsViewerView, InTuneLogsViewerViewModel>();

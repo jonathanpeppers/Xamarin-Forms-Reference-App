@@ -23,10 +23,5 @@ namespace Mobile.RefApp.Lib.AppCenter
         {
             await Microsoft.AppCenter.AppCenter.SetEnabledAsync(isEnabled);
         }
-
-        public static void SetUserId(string userId)
-        {
-            Microsoft.AppCenter.AppCenter.SetUserId(userId);
-        }
     }
 }

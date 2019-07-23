@@ -3,11 +3,12 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Mobile.RefApp.CoreUI.Base;
 using Mobile.RefApp.Lib.ADAL;
+using Mobile.RefApp.Lib.Logging;
 
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class AzureTokenDetailViewerViewModel
-        : ViewModelBase
+        : BaseViewModel
     {
         private CacheToken _cacheToken;
         public CacheToken CacheToken
@@ -18,7 +19,7 @@ namespace Mobile.RefApp.CoreUI.ViewModels
 
         public ObservableCollection<KeyValuePair<string, string>> TokenDetails { get; private set; }
 
-        public AzureTokenDetailViewerViewModel()
+        public AzureTokenDetailViewerViewModel(ILoggingService loggingService) : base (loggingService)
         {
             Title = "Detail Token Viewer";
         }

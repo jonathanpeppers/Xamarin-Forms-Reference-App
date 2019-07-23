@@ -33,5 +33,11 @@ namespace Mobile.RefApp.Lib.Intune.Policies
         string UIPolicyIdentity { get; }
 #endif
 
+#if Android
+        bool IsScreenCaptureAllowed { get; }
+        bool IsSaveToPersonalAllowed { get; }
+        bool IsFileEncrytionUsed { get; }
+#endif
+
     }
 }

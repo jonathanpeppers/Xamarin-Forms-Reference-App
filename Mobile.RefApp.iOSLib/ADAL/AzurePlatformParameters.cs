@@ -9,10 +9,17 @@ namespace Mobile.RefApp.iOSLib.ADAL
 	public class AzurePlatformParameters
 			: IAzurePlatformParameters
 	{
-		public IPlatformParameters GetPlatformParameters(bool useBroker)
-		{
-			var controller = UIApplication.SharedApplication.KeyWindow.RootViewController;
-			return new PlatformParameters(controller, useBroker);
-		}
-	}
+        private UIViewController _viewController;
+        public IPlatformParameters GetPlatformParameters(bool useBroker)
+        {
+
+            Xamarin.Essentials.MainThread.BeginInvokeOnMainThread(GetViewController);
+            return new PlatformParameters(_viewController, useBroker);
+        }
+
+        private void GetViewController()
+        {
+            _viewController = UIApplication.SharedApplication.KeyWindow.RootViewController;
+        }
+    }
 }

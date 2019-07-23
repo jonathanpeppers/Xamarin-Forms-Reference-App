@@ -18,10 +18,9 @@ using Xamarin.Forms.Internals;
 namespace Mobile.RefApp.CoreUI.ViewModels
 {
     public class InTuneEnrollmentViewModel
-        : ViewModelBase
+        : BaseViewModel
     {
         private readonly IEndpointService _endpointService;
-        private readonly ILoggingService _loggingService;
         private readonly IEnrollmentService _enrollmentService;
         private readonly IIntuneService _intuneService;
        
@@ -92,10 +91,10 @@ namespace Mobile.RefApp.CoreUI.ViewModels
             IEnrollmentService enrollmentService,
             IIntuneService intuneService,
             IEndpointService endpointService)
+            : base (loggingService)
         {
             Title = "InTune Enrollment";
 
-            _loggingService = loggingService;
             _enrollmentService = enrollmentService;
             _intuneService = intuneService;
             _endpointService = endpointService;
@@ -128,19 +127,19 @@ namespace Mobile.RefApp.CoreUI.ViewModels
         private void DoLoginEnrollAccount()
         {
             Status = string.Empty;
-            _enrollmentService.LoginAndEnrollAccount(SelectedEndpoint);
+            Task.Run(async () => await _enrollmentService.LoginAndEnrollAccountAsync(SelectedEndpoint));
         }
 
         private void DoIntuneEnrollAccount()
         {
             Status = string.Empty;
-            _enrollmentService.RegisterAndEnrollAccount(SelectedEndpoint);
+            Task.Run(async () => await _enrollmentService.RegisterAndEnrollAccountAsync(SelectedEndpoint));
         }
 
         private void DoDeregisterUnenroll()
         {
             Status = string.Empty;
-            _enrollmentService.DeRegisterAndUnenrollAccount(false);
+            Task.Run(async () => await _enrollmentService.DeRegisterAndUnenrollAccountAsync(false));
         }
 
         private void OnPolicyRequestStatus(Status status)
