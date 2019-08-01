@@ -14,6 +14,7 @@ using Mobile.RefApp.Lib.Logging;
 using Android.Runtime;
 using Mobile.RefApp.Lib.Intune.Logging;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mobile.RefApp.DroidLib.Intune.Enrollment
 {
@@ -32,7 +33,7 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
 
         public Endpoint Endpoint { get; set; }
 
-        public List<string> RegisteredAccounts { get; private set; }
+        public string[] RegisteredAccounts { get; private set; }
 
         public string EnrolledAccount => _userInfo?.PrimaryUser;
         public bool IsIdentityManaged => (_userInfo == null);
@@ -44,22 +45,23 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
         public EnrollmentService(
             ILoggingService loggingService,
             IAzureAuthenticatorEndpointService authenticatorEndpointService)
-		{
-		    _loggingService = loggingService;
-		    _enrollmentManager = MAMComponents.Get<IMAMEnrollmentManager>();
-		    _notificationRegistery = MAMComponents.Get<IMAMNotificationReceiverRegistry>();
+        {
+            _loggingService = loggingService;
+            _enrollmentManager = MAMComponents.Get<IMAMEnrollmentManager>();
+            _authenticatorEndpointService = authenticatorEndpointService;
+            _notificationRegistery = MAMComponents.Get<IMAMNotificationReceiverRegistry>();
 
             _registerError = null;
             Endpoint = null;
-            RegisteredAccounts = new List<string>();
+            RegisteredAccounts = new string[0];
 
-		    _notificationRegistery.RegisterReceiver(this, MAMNotificationType.MamEnrollmentResult);
-		    _notificationRegistery.RegisterReceiver(this, MAMNotificationType.RefreshPolicy);
+            _notificationRegistery.RegisterReceiver(this, MAMNotificationType.MamEnrollmentResult);
+            _notificationRegistery.RegisterReceiver(this, MAMNotificationType.RefreshPolicy);
             mAMWEAuthCallback = new MAMWEAuthCallback(_authenticatorEndpointService);
             _enrollmentManager.RegisterAuthenticationCallback(mAMWEAuthCallback);
         }
 
-        public void RegisterAndEnrollAccount(Endpoint endPoint)
+        public async Task RegisterAndEnrollAccountAsync(Endpoint endPoint)
         {
             try
             {
@@ -68,14 +70,12 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
                     Endpoint = endPoint;
                     mAMWEAuthCallback.CurrentEndpoint = endPoint;
 
-                    var tokens = _authenticatorEndpointService.GetCachedTokens(Endpoint).Where(x => x.Resource == Endpoint.ResourceId).ToList();
-                    if (tokens.Any())
+                    var token = await _authenticatorEndpointService.AcquireTokenSilentAsync(endPoint);
+                    if (token != null)
                     {
-                        var token = tokens[0];
-
-                        _loggingService.LogInformation(typeof(EnrollmentService), $"{Lib.Intune.Constants.Enrollment.ENROLLMENTLOGTAG} UPN {token.DisplayableId}\n TenantId: {token.UniqueId}\n AadId: {token.TenantId} \n");
+                        _loggingService.LogInformation(typeof(EnrollmentService), $"{Lib.Intune.Constants.Enrollment.ENROLLMENTLOGTAG} UPN {token.UserInfo.DisplayableId}\n TenantId: {token.UserInfo.UniqueId}\n AadId: {token.TenantId} \n");
                         InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Register and Enrollment", Module = SDKModule.Enrollment });
-                        _enrollmentManager.RegisterAccountForMAM(token.DisplayableId, token.UniqueId, token.TenantId);
+                        _enrollmentManager.RegisterAccountForMAM(token.UserInfo.DisplayableId, token.UserInfo.UniqueId, token.TenantId);
                     }
                     else
                         throw new Exception(Lib.Intune.Constants.Enrollment.ERRORNULL);
@@ -97,164 +97,145 @@ namespace Mobile.RefApp.DroidLib.Intune.Enrollment
             }
         }
 
-        public void LoginAndEnrollAccount(Endpoint endPoint, string identity = null)
+        public Task LoginAndEnrollAccountAsync(Endpoint endPoint, string identity = null)
+        {
+            return RegisterAndEnrollAccountAsync(endPoint);
+        }
+
+        public async Task DeRegisterAndUnenrollAccountAsync(bool withWipe = false)
         {
             try
             {
-                InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Login and Enrollment", Module = SDKModule.Enrollment });
-
-                RegisterAndEnrollAccount(endPoint);
-            }
-            catch (Exception ex)
-            {
-                var status = new Status()
+                var token = await _authenticatorEndpointService.AcquireTokenSilentAsync(Endpoint);
+                if (token != null)
                 {
-                    Error = ex.Message,
-                    DidSucceed = false,
-                    StatusCode = StatusCode.InternalError
-                };
-
-                _loggingService.LogError(typeof(EnrollmentService), ex, ex.Message);
-                EnrollmentRequestStatus(status);
-            }
-		}
-
-		public void DeRegisterAndUnenrollAccount(bool withWipe = false)
-		{
-			try
-			{
-                var tokens = _authenticatorEndpointService.GetCachedTokens(Endpoint).Where(x => x.Resource == Endpoint.ResourceId).ToList();
-                if (tokens.Any())
-                {
-                    var token = tokens[0];
-
                     InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Starting Deregister and Unenrollment", Module = SDKModule.Unenrollment });
-                    _enrollmentManager.UnregisterAccountForMAM(token.UniqueId);
+                    _enrollmentManager.UnregisterAccountForMAM(token.UserInfo.UniqueId);
                 }
                 else
                     throw new Exception(Lib.Intune.Constants.Enrollment.ERRORNULL);
             }
-			catch (Exception ex)
-			{
-				_loggingService.LogError(typeof(EnrollmentService), ex, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                _loggingService.LogError(typeof(EnrollmentService), ex, ex.Message);
+            }
+        }
 
-		public new void Dispose()
-		{
-			if (_enrollmentManager != null)
-				_enrollmentManager.Dispose();
-		}
+        public new void Dispose()
+        {
+            if (_enrollmentManager != null)
+                _enrollmentManager.Dispose();
+        }
 
-		public bool OnReceive(IMAMNotification notification)
-		{
-			var status = new Status();
+        public bool OnReceive(IMAMNotification notification)
+        {
+            var status = new Status();
 
-			if (notification.Type == MAMNotificationType.MamEnrollmentResult)
-			{
-				var en = notification.JavaCast<IMAMEnrollmentNotification>();
-				var result = en.EnrollmentResult;
+            if (notification.Type == MAMNotificationType.MamEnrollmentResult)
+            {
+                var en = notification.JavaCast<IMAMEnrollmentNotification>();
+                var result = en.EnrollmentResult;
 
-				if (EnrollmentRequestStatus != null)
-				{
-					if (result == MAMEnrollmentManagerResult.AuthorizationNeeded)
-					{
-						status.StatusCode = StatusCode.AuthRequired;
-						status.DidSucceed = false;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.CompanyPortalRequired)
-					{
-						status.StatusCode = StatusCode.CompanyPortalRequired;
-						status.DidSucceed = false;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.EnrollmentFailed)
-					{
-						status.StatusCode = StatusCode.AppNotEnrolled;
-						status.DidSucceed = false;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.EnrollmentSucceeded)
-					{
-						status.StatusCode = StatusCode.EnrollmentSuccess;
-						status.DidSucceed = true;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.MdmEnrolled)
-					{
-						status.StatusCode = StatusCode.MdmEnrolled;
-						status.DidSucceed = true;
-						status.Error = null;
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.NotLicensed)
-					{
-						status.StatusCode = StatusCode.AccountNotLicensed;
-						status.DidSucceed = false;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.WrongUser)
-					{
-						status.StatusCode = StatusCode.MdmEnrolledDifferentUser;
-						status.DidSucceed = false;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
+                if (EnrollmentRequestStatus != null)
+                {
+                    if (result == MAMEnrollmentManagerResult.AuthorizationNeeded)
+                    {
+                        status.StatusCode = StatusCode.AuthRequired;
+                        status.DidSucceed = false;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.CompanyPortalRequired)
+                    {
+                        status.StatusCode = StatusCode.CompanyPortalRequired;
+                        status.DidSucceed = false;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.EnrollmentFailed)
+                    {
+                        status.StatusCode = StatusCode.AppNotEnrolled;
+                        status.DidSucceed = false;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.EnrollmentSucceeded)
+                    {
+                        status.StatusCode = StatusCode.EnrollmentSuccess;
+                        status.DidSucceed = true;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.MdmEnrolled)
+                    {
+                        status.StatusCode = StatusCode.MdmEnrolled;
+                        status.DidSucceed = true;
+                        status.Error = null;
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.NotLicensed)
+                    {
+                        status.StatusCode = StatusCode.AccountNotLicensed;
+                        status.DidSucceed = false;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.WrongUser)
+                    {
+                        status.StatusCode = StatusCode.MdmEnrolledDifferentUser;
+                        status.DidSucceed = false;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
 
-                    InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Did Succeed: {status.DidSucceed} Status Code: { status.StatusCode}, Error: {status.Error}", Module = SDKModule.Enrollment});
+                    InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Did Succeed: {status.DidSucceed} Status Code: { status.StatusCode}, Error: {status.Error}", Module = SDKModule.Enrollment });
 
-					EnrollmentRequestStatus(status);
-				}
-				else if (UnenrollmentRequestStatus != null)
-				{
+                    EnrollmentRequestStatus(status);
+                }
+                else if (UnenrollmentRequestStatus != null)
+                {
 
-					if (result == MAMEnrollmentManagerResult.UnenrollmentFailed)
-					{
-						status.StatusCode = StatusCode.UnenrollmentFailed;
-						status.DidSucceed = false;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
-					else if (result == MAMEnrollmentManagerResult.UnenrollmentSucceeded)
-					{
-						status.StatusCode = StatusCode.UnenrollmentSuccess;
-						status.DidSucceed = true;
-						status.Error = _registerError?.ToString();
-						_registerError = null;
-					}
+                    if (result == MAMEnrollmentManagerResult.UnenrollmentFailed)
+                    {
+                        status.StatusCode = StatusCode.UnenrollmentFailed;
+                        status.DidSucceed = false;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
+                    else if (result == MAMEnrollmentManagerResult.UnenrollmentSucceeded)
+                    {
+                        status.StatusCode = StatusCode.UnenrollmentSuccess;
+                        status.DidSucceed = true;
+                        status.Error = _registerError?.ToString();
+                        _registerError = null;
+                    }
 
                     InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = $"Did Succeed: {status.DidSucceed} Status Code: { status.StatusCode}, Error: {status.Error}", Module = SDKModule.Unenrollment });
                     UnenrollmentRequestStatus(status);
-				}
-			}
-			else if (notification.Type == MAMNotificationType.RefreshPolicy)
-			{
-				status.StatusCode = StatusCode.RefreshPolicy;
-				status.DidSucceed = true;
-				status.Error = null;
+                }
+            }
+            else if (notification.Type == MAMNotificationType.RefreshPolicy)
+            {
+                status.StatusCode = StatusCode.RefreshPolicy;
+                status.DidSucceed = true;
+                status.Error = null;
 
                 InTuneLoggingService.Instance.AddMessage(new LoggingMessage { LogDate = DateTime.Now, Message = "Refresh Policy", Module = SDKModule.Policies });
 
                 PolicyRequestStatus(status);
-			}
-			return true;
-		}
+            }
+            return true;
+        }
 
     }
 
-    public class MAMWEAuthCallback 
-        : Java.Lang.Object, 
+    public class MAMWEAuthCallback
+        : Java.Lang.Object,
           IMAMServiceAuthenticationCallback
     {
         private readonly IAzureAuthenticatorEndpointService _authenticatorEndpointService;
         public Endpoint CurrentEndpoint { get; set; }
-       
+
 
         public MAMWEAuthCallback(IAzureAuthenticatorEndpointService authenticatorEndpointService)
         {
