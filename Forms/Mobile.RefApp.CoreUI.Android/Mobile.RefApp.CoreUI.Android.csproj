@@ -74,10 +74,10 @@
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.1" />
     <PackageReference Include="Xamarin.Essentials" Version="1.2.0" />
     <PackageReference Include="Xamarin.Forms">
-      <Version>4.1.0.581479</Version>
+      <Version>4.1.0.618606</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Forms.Visual.Material">
-      <Version>4.1.0.581479</Version>
+      <Version>4.1.0.618606</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AppCenter.Push">
       <Version>2.1.1</Version>
@@ -174,7 +174,7 @@
       <Name>Mobile.RefApp.DroidLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Mobile.RefApp.XamarinForms\Mobile.RefApp.XamarinForms.csproj">
-      <Project>{1BA8B79D-BA0E-41FC-B35C-F74E876AE817}</Project>
+      <Project>{F68C641F-69A4-430B-9F8E-1734A232461F}</Project>
       <Name>Mobile.RefApp.XamarinForms</Name>
     </ProjectReference>
   </ItemGroup>

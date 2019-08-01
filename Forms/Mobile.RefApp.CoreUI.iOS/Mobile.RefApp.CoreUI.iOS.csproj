@@ -141,9 +141,9 @@
     -->
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.1.0.581479" />
+    <PackageReference Include="Xamarin.Forms" Version="4.1.0.618606" />
     <PackageReference Include="Xamarin.Forms.Visual.Material">
-      <Version>4.1.0.581479</Version>
+      <Version>4.1.0.618606</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.21.8" />
     <PackageReference Include="Xamarin.Essentials" Version="1.2.0" />
@@ -200,7 +200,7 @@
       <Name>Mobile.RefApp.iOSLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Mobile.RefApp.XamarinForms\Mobile.RefApp.XamarinForms.csproj">
-      <Project>{1BA8B79D-BA0E-41FC-B35C-F74E876AE817}</Project>
+      <Project>{F68C641F-69A4-430B-9F8E-1734A232461F}</Project>
       <Name>Mobile.RefApp.XamarinForms</Name>
     </ProjectReference>
   </ItemGroup>
